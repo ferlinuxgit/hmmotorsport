@@ -10,7 +10,11 @@ Estado real actual:
 - `npm run modules:sync` funciona
 - `npm run lint` pasa
 - `npm run typecheck` pasa
+- `npm test` pasa
 - `npm run build` pasa
+- `npm audit --omit=dev` es parte del checklist
+- `docker build` pasa
+- smoke Docker con `live`, `ready` y `health` pasa contra Postgres temporal
 
 ## Qué está resuelto hoy
 
@@ -43,7 +47,7 @@ Estado real actual:
 
 ### Auth
 
-- integración con Clerk
+- integración con Better Auth
 - páginas de sign-in y sign-up
 - protección de rutas privadas
 - sincronización básica de usuario en tabla interna
@@ -65,41 +69,20 @@ Estado real actual:
 ### Operación
 
 - Dockerfile
-- stack para Coolify
+- stack interno para Coolify
+- stack externo para PostgreSQL gestionado
+- migraciones runtime opcionales con `RUN_MIGRATIONS`
+- observabilidad base con logs JSON, request ids y health endpoints
 - documentación base
 
-## Qué no está resuelto todavía
-
-### Datos
-
-- migraciones versionadas iniciales
-- seeds reproducibles
-- bootstrap completo de base de datos
-
-### Auth y autorización
-
-- webhooks de Clerk
-- revocación o sincronización completa por eventos
-- RBAC por workspace
-- permisos finos
-
-### Producto
+## Qué no intenta resolver el boilerplate
 
 - paneles reales de contenido
 - paneles reales de catálogo y pedidos
-- onboarding funcional de usuario/workspace
-
-### Billing
-
-- webhooks de Stripe
-- captura y cierre de flujo PayPal
-- actualización robusta de órdenes
-
-### Calidad
-
-- tests automatizados
-- CI
-- observabilidad más rica
+- onboarding funcional del producto final
+- permisos finos por recurso de producto
+- reconciliación periódica del billing de cada negocio
+- alertas, dashboards y métricas del entorno final
 
 ## Evaluación honesta
 
@@ -110,12 +93,11 @@ Estado real actual:
 - validación real del proyecto
 - base moderna y extensible
 
-### Lo que todavía limita la nota
+### Lo que limita la nota del producto final, no del boilerplate
 
-- persistencia operable incompleta
-- autorización aún básica
-- ausencia de test suite
-- falta de automatismos de producción
+- ausencia de dominio real encima del core
+- falta de datos, copy y marca definitivos
+- decisiones operativas que dependen del hosting final
 
 ## Estimación de madurez
 
@@ -145,7 +127,7 @@ Porque una base excelente no solo compila:
 - iniciar un producto nuevo sobre una arquitectura sana
 - construir verticales nuevas sin rehacer el core
 - desplegar en Docker/Coolify
-- usar Clerk como identidad
+- usar Better Auth como identidad
 - conectar PostgreSQL y empezar a modelar dominio
 - tener un punto de partida serio para marketing, commerce y SaaS
 
@@ -156,4 +138,3 @@ Porque una base excelente no solo compila:
 - que el esquema de datos está congelado
 - que el admin cubre operación interna real
 - que ya existe cobertura suficiente para cambios grandes sin tests
-

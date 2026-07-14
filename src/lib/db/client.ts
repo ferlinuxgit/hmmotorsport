@@ -18,9 +18,7 @@ function getSqlClient() {
     prepare: false
   });
 
-  if (process.env.NODE_ENV !== "production") {
-    globalForDb.sql = sql;
-  }
+  globalForDb.sql = sql;
 
   return sql;
 }
@@ -32,9 +30,13 @@ export function getDb() {
 
   const db = drizzle(getSqlClient());
 
-  if (process.env.NODE_ENV !== "production") {
-    globalForDb.db = db;
-  }
+  globalForDb.db = db;
 
   return db;
+}
+
+export async function closeDb() {
+  await globalForDb.sql?.end();
+  delete globalForDb.sql;
+  delete globalForDb.db;
 }

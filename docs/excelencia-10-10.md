@@ -59,63 +59,34 @@ Debe cumplir:
 - explicar por qué las decisiones son así
 - explicar cómo contribuir sin romper la base
 
-## Brecha actual
+## Estado actual
 
-## Lo que ya está cerca de excelencia
+## Lo que ya cumple el estándar de excelencia para una base reutilizable
 
 - visión arquitectónica
 - organización del repositorio
-- setup y despliegue base
+- setup y despliegue reproducibles
 - modularidad
-- documentación inicial
-- validación local real
+- documentación operativa
+- validación local y Docker real
+- observabilidad mínima
+- trazabilidad por request id
+- healthchecks y smoke tests
+- migraciones y seeds reproducibles
+- auth con sync y webhooks base
+- billing base con webhooks y cierre inicial
 
-## Lo que todavía separa esta base del 10/10
+## Lo que ya no corresponde exigir al boilerplate genérico
 
-### 1. Persistencia y ciclo de vida de datos
+Estas piezas siguen siendo necesarias para un producto final, pero no son requisito para considerar excelente a la base:
 
-Falta:
+- paneles concretos de negocio
+- reglas finas por recurso específico del producto
+- alertas y métricas del hosting final
+- copy, assets y SEO editorial definitivos
+- flujos operativos propios de cada vertical
 
-- migración inicial versionada
-- seeds reproducibles
-- proceso claro de evolución del esquema
-
-### 2. Identidad y autorización
-
-Falta:
-
-- webhooks de Clerk
-- sincronización por eventos
-- RBAC por workspace
-- permisos finos reutilizables
-
-### 3. Billing real
-
-Falta:
-
-- persistencia más robusta del ciclo de pago
-- webhooks Stripe
-- cierre operativo del flujo PayPal
-- reconciliación de órdenes
-
-### 4. Calidad automatizada
-
-Falta:
-
-- tests unitarios
-- tests de integración
-- smoke tests
-- CI completa
-
-### 5. Operación y mantenimiento
-
-Falta:
-
-- observabilidad
-- trazabilidad de errores
-- guías operativas de producción
-
-## Qué hay que conseguir para llamarlo excelente
+## Qué exige seguir manteniendo para llamarlo excelente
 
 ### Mínimo técnico
 
@@ -123,20 +94,20 @@ Falta:
 - migraciones listas
 - seeds listas
 - auth con sync robusta
+- audit limpio
 
 ### Mínimo operativo
 
 - deploy repetible
-- healthchecks más útiles
+- healthchecks útiles
 - errores trazables
 - documentación de recuperación básica
+- smoke Docker contra runtime real
 
 ### Mínimo de producto
 
-- onboarding usable
-- admin útil
-- permisos coherentes
-- flujos de billing no solo demostrativos
+- permisos coherentes a nivel base
+- flujos de billing cerrados a nivel boilerplate
 
 ## Anti-patrones que impedirían llegar a 10/10
 
@@ -158,7 +129,7 @@ Preguntas útiles:
 
 ## Definición práctica de 10/10
 
-Podremos hablar de una base casi `10/10` cuando:
+Podemos hablar de una base `10/10` para reutilización cuando:
 
 - el core sea estable
 - la evolución esté guiada por contratos
@@ -168,14 +139,6 @@ Podremos hablar de una base casi `10/10` cuando:
 
 ## Conclusión
 
-Esta base ya dejó de ser un prototipo.
+Esta base ya cumple un estándar alto de producción para servir como punto de partida serio.
 
-Ahora el salto hacia la excelencia no depende tanto de añadir más páginas, sino de cerrar:
-
-- migraciones
-- sync de identidad
-- permisos
-- tests
-- operación
-- documentación viva
-
+El trabajo que sigue ya no es “arreglar el boilerplate”, sino construir correctamente cada proyecto encima sin degradar estas garantías.

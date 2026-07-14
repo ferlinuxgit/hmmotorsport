@@ -4,6 +4,7 @@
 
 - `Dockerfile`: construye la aplicación Next.js para producción
 - `docker-compose.coolify.yml`: stack listo para Coolify con `app` y `postgres`
+- `docker-compose.external.yml`: stack solo `app` para PostgreSQL gestionado o externo
 - `.env.example`: variables base para alternar entre PostgreSQL interno o externo
 
 ## Estrategia
@@ -32,26 +33,26 @@ Variables mínimas:
 
 ```env
 APP_URL=https://tu-dominio.com
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_o_pk_test
-CLERK_SECRET_KEY=sk_live_o_sk_test
+BETTER_AUTH_SECRET=reemplazar-con-un-secreto-largo
+BETTER_AUTH_URL=https://tu-dominio.com
 DATABASE_MODE=internal
 POSTGRES_DB=baseboilerplate
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=una-password-segura
 ```
 
-### Opción 2: Servicio app con Dockerfile
+### Opción 2: Servicio app con Dockerfile o compose externo
 
 Si despliegas solo el servicio `app`, puedes conectarlo a:
 
 - un PostgreSQL gestionado por Coolify
 - un PostgreSQL externo
 
-En ese caso usa:
+En ese caso usa `docker-compose.external.yml` o un servicio Dockerfile con:
 
 ```env
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_o_pk_test
-CLERK_SECRET_KEY=sk_live_o_sk_test
+BETTER_AUTH_SECRET=reemplazar-con-un-secreto-largo
+BETTER_AUTH_URL=https://tu-dominio.com
 DATABASE_MODE=external
 DATABASE_URL=postgres://user:password@host:5432/database
 ```
@@ -61,9 +62,9 @@ DATABASE_URL=postgres://user:password@host:5432/database
 - `next.config.ts` usa `output: "standalone"` para producción
 - el contenedor expone `3000`
 - el servicio app espera `APP_URL` correctamente definido
-- Clerk requiere `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` y `CLERK_SECRET_KEY`
+- Better Auth requiere `BETTER_AUTH_SECRET` y `BETTER_AUTH_URL`
 - la configuración sensible se valida en runtime de servidor, no en import global durante `build`
-- si vas a ejecutar migraciones en despliegue, añade un job o comando separado con `npm run db:migrate`
+- el contenedor ejecuta `scripts/migrate.mjs` al arrancar si `RUN_MIGRATIONS=true`; usa `RUN_MIGRATIONS=false` si prefieres un job separado
 
 ## Recomendaciones
 

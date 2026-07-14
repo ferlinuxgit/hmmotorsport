@@ -118,7 +118,7 @@ Usar Drizzle ORM.
 Separar el acceso al entorno en bloques:
 
 - app
-- Clerk
+- Better Auth
 - database
 - payments
 
@@ -155,11 +155,11 @@ No conectar PostgreSQL en el import del módulo, sino cuando realmente se solici
 
 - hay que tener cuidado con cuándo se llama a `getDb()`
 
-## 8. Clerk como proveedor de identidad
+## 8. Better Auth como proveedor de identidad
 
 ### Decisión
 
-Usar Clerk para autenticación y gestión de usuarios.
+Usar Better Auth para autenticación y gestión de usuarios.
 
 ### Motivo
 
@@ -180,7 +180,7 @@ Usar Clerk para autenticación y gestión de usuarios.
 
 ### Decisión
 
-Mantener usuarios en Clerk y a la vez sincronizar una tabla interna `users`.
+Mantener usuarios en Better Auth y a la vez sincronizar una tabla interna `users`.
 
 ### Motivo
 
@@ -188,7 +188,7 @@ Mantener usuarios en Clerk y a la vez sincronizar una tabla interna `users`.
 
 ### Beneficio
 
-- no se acopla todo el dominio a Clerk
+- no se acopla todo el dominio a Better Auth
 - permite evolucionar permisos y relaciones internas
 
 ### Tradeoff
@@ -255,8 +255,8 @@ Preparar el boilerplate para despliegue contenedorizado desde el inicio.
 
 ## Decisiones aún no cerradas del todo
 
-- estrategia final de migraciones
-- estrategia final de webhooks Clerk
+- estrategia para partir la migración inicial cuando existan instalaciones reales
+- flujos avanzados de Better Auth: recuperación de contraseña, verificación de email y OAuth si el producto lo requiere
 - RBAC por workspace
 - estrategia de testing
 - observabilidad base
@@ -270,4 +270,3 @@ Una decisión nueva debería aprobarse si:
 - mantiene el core pequeño
 - mejora operabilidad real
 - no introduce complejidad que solo sirva a una única vertical
-

@@ -1,382 +1,132 @@
 # Referencia de entorno
 
-Documento de referencia para todas las variables de entorno relevantes del boilerplate.
+Variables principales del boilerplate.
 
-## Objetivo
-
-Este archivo explica:
-
-- qué variables existen
-- cuáles son obligatorias
-- en qué contexto se usan
-- qué comportamiento controlan
-
-## Principio general
-
-No todas las variables se validan al mismo tiempo.
-
-La configuración está separada por dominios:
-
-- app
-- Clerk
-- base de datos
-- pagos
-
-Esto evita que el proyecto falle por cargar secretos o infraestructura que una ruta concreta no necesita.
-
-## Variables de aplicación
+## Aplicación
 
 ### `APP_NAME`
+- nombre público de la app
 
-Propósito:
-
-- nombre visible de la aplicación
-
-Uso:
-
-- branding básico
-- textos del layout
-
-Ejemplo:
-
-```env
-APP_NAME=Universal Boilerplate
-```
+### `APP_DESCRIPTION`
+- descripción base usada en metadata SEO
 
 ### `APP_URL`
+- URL pública base
+- se usa para metadata, redirects y Better Auth
 
-Propósito:
+## Better Auth
 
-- URL base pública de la aplicación
+### `BETTER_AUTH_SECRET`
+- secreto obligatorio para firmar cookies y sesiones
+- debe tener al menos 32 caracteres
 
-Uso:
+### `BETTER_AUTH_URL`
+- URL base pública usada por Better Auth
+- normalmente coincide con `APP_URL`
 
-- construcción de URLs absolutas
-- redirects de checkout
-- integración con servicios externos
+### `BETTER_AUTH_TRUSTED_ORIGINS`
+- lista opcional separada por comas
+- útil para previews, dominios alternativos o proxies
 
-Ejemplo:
-
-```env
-APP_URL=http://localhost:3000
-```
-
-En producción debe apuntar al dominio real.
-
-## Variables de Clerk
-
-### `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
-
-Propósito:
-
-- clave pública de Clerk
-
-Uso:
-
-- integración cliente y provider
-
-Obligatoria:
-
-- sí
-
-### `CLERK_SECRET_KEY`
-
-Propósito:
-
-- clave privada de Clerk
-
-Uso:
-
-- operaciones de servidor
-- autenticación robusta
-
-Obligatoria:
-
-- sí
-
-### `NEXT_PUBLIC_CLERK_SIGN_IN_URL`
-
-Propósito:
-
-- ruta de entrada al sign-in
-
-Valor por defecto:
-
-```env
-NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
-```
-
-### `NEXT_PUBLIC_CLERK_SIGN_UP_URL`
-
-Propósito:
-
-- ruta de entrada al sign-up
-
-Valor por defecto:
-
-```env
-NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
-```
-
-### `NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL`
-
-Propósito:
-
-- redirect por defecto tras login
-
-Valor por defecto:
-
-```env
-NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL=/dashboard
-```
-
-### `NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL`
-
-Propósito:
-
-- redirect por defecto tras registro
-
-Valor por defecto:
-
-```env
-NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL=/dashboard
-```
-
-## Variables de base de datos
-
-## `DATABASE_MODE`
-
-Propósito:
-
-- definir si la app usa PostgreSQL interno o externo
-
-Valores permitidos:
-
-- `internal`
-- `external`
+### `AUTH_ADMIN_EMAILS`
+- lista opcional separada por comas
+- esos emails se elevan a rol `admin`
 
 Ejemplo:
 
 ```env
-DATABASE_MODE=internal
+BETTER_AUTH_SECRET=replace-with-a-long-random-secret
+BETTER_AUTH_URL=http://localhost:3000
+BETTER_AUTH_TRUSTED_ORIGINS=
+AUTH_ADMIN_EMAILS=admin@empresa.com,ops@empresa.com
 ```
+
+## Base de datos
+
+### `DATABASE_MODE`
+- `internal` o `external`
 
 ### `DATABASE_URL`
-
-Propósito:
-
-- cadena de conexión completa a PostgreSQL
-
-Uso:
-
-- se usa directamente en modo `external`
-- en modo `internal` puede sobrescribir la construcción automática
-
-Ejemplo:
-
-```env
-DATABASE_URL=postgres://user:password@host:5432/database
-```
+- conexión completa cuando usas base externa
 
 ### `POSTGRES_HOST`
-
-Propósito:
-
-- host del servicio Postgres cuando se usa modo `internal`
-
-Valor típico:
-
-```env
-POSTGRES_HOST=postgres
-```
-
 ### `POSTGRES_PORT`
-
-Propósito:
-
-- puerto del servicio Postgres
-
-Valor típico:
-
-```env
-POSTGRES_PORT=5432
-```
-
 ### `POSTGRES_DB`
-
-Propósito:
-
-- nombre de la base de datos
-
-Valor típico:
-
-```env
-POSTGRES_DB=baseboilerplate
-```
-
 ### `POSTGRES_USER`
-
-Propósito:
-
-- usuario de PostgreSQL
-
-Valor típico:
-
-```env
-POSTGRES_USER=postgres
-```
-
 ### `POSTGRES_PASSWORD`
-
-Propósito:
-
-- contraseña de PostgreSQL
-
-Valor típico:
-
-```env
-POSTGRES_PASSWORD=postgres
-```
-
-En producción no debe usarse el valor por defecto.
-
 ### `POSTGRES_SSL`
+- variables usadas para construir `DATABASE_URL` en modo `internal`
 
-Propósito:
+## Pagos
 
-- activar conexión SSL al construir la URL interna
+### Stripe
+- `STRIPE_SECRET_KEY`
+- `STRIPE_WEBHOOK_SECRET`
 
-Valores permitidos:
+### PayPal
+- `PAYPAL_CLIENT_ID`
+- `PAYPAL_CLIENT_SECRET`
+- `PAYPAL_WEBHOOK_ID`
+- `PAYPAL_ENVIRONMENT`
 
-- `true`
-- `false`
+## Observabilidad
 
-Ejemplo:
+### `DEPLOYMENT_ENV`
+- `development`, `staging` o `production`
 
-```env
-POSTGRES_SSL=false
-```
+### `LOG_LEVEL`
+- `debug`, `info`, `warn` o `error`
 
-## Variables de pagos
+### `BUILD_SHA`
+- referencia opcional del build desplegado
 
-### `STRIPE_SECRET_KEY`
+### `RATE_LIMIT_BACKEND`
+- `memory` para desarrollo o una sola instancia efímera
+- `database` obligatorio en producción y compartido entre réplicas
 
-Propósito:
+### `TRUST_PROXY_HEADERS`
+- debe ser `true` únicamente cuando un reverse proxy confiable sobrescribe los headers de IP
 
-- clave privada de Stripe
+## Runtime Docker
 
-Uso:
+### `RUN_MIGRATIONS`
+- si vale `true`, ejecuta `scripts/migrate.mjs` al arrancar
 
-- creación de checkout sessions reales
+### Retención
+- `SESSION_RETENTION_DAYS`
+- `DRAFT_ORDER_RETENTION_DAYS`
+- `ANALYTICS_RETENTION_DAYS`
+- `PAYMENT_EVENT_RETENTION_DAYS`
+- se aplican al ejecutar `npm run db:maintenance`
 
-Comportamiento actual:
-
-- si no existe, el provider devuelve una sesión mock de desarrollo
-
-### `STRIPE_WEBHOOK_SECRET`
-
-Propósito:
-
-- verificación de webhooks de Stripe
-
-Estado actual:
-
-- prevista para evolución futura
-- todavía no hay webhook implementado
-
-### `PAYPAL_CLIENT_ID`
-
-Propósito:
-
-- client id de PayPal
-
-Uso:
-
-- autenticación OAuth del provider
-
-### `PAYPAL_CLIENT_SECRET`
-
-Propósito:
-
-- secreto del client de PayPal
-
-Uso:
-
-- autenticación OAuth del provider
-
-### `PAYPAL_ENVIRONMENT`
-
-Propósito:
-
-- seleccionar entorno de PayPal
-
-Valores permitidos:
-
-- `sandbox`
-- `live`
-
-Ejemplo:
-
-```env
-PAYPAL_ENVIRONMENT=sandbox
-```
-
-## Configuraciones recomendadas por entorno
-
-## Desarrollo local
+## Desarrollo local recomendado
 
 ```env
 APP_NAME=Universal Boilerplate
+APP_DESCRIPTION=Next.js boilerplate universal con frontend, backend, PostgreSQL, Drizzle, Better Auth, Stripe y PayPal.
 APP_URL=http://localhost:3000
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_xxx
-CLERK_SECRET_KEY=sk_test_xxx
-NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
-NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
-NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL=/dashboard
-NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL=/dashboard
+DEPLOYMENT_ENV=development
+LOG_LEVEL=info
+RATE_LIMIT_BACKEND=memory
+TRUST_PROXY_HEADERS=false
+BUILD_SHA=
+BETTER_AUTH_SECRET=replace-with-a-long-random-secret
+BETTER_AUTH_URL=http://localhost:3000
+BETTER_AUTH_TRUSTED_ORIGINS=
+AUTH_ADMIN_EMAILS=
 DATABASE_MODE=internal
+DATABASE_URL=
 POSTGRES_HOST=localhost
 POSTGRES_PORT=5432
 POSTGRES_DB=baseboilerplate
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=postgres
 POSTGRES_SSL=false
+STRIPE_SECRET_KEY=
+STRIPE_WEBHOOK_SECRET=
+PAYPAL_CLIENT_ID=
+PAYPAL_CLIENT_SECRET=
+PAYPAL_WEBHOOK_ID=
 PAYPAL_ENVIRONMENT=sandbox
+RUN_MIGRATIONS=true
 ```
-
-## Producción con Postgres interno
-
-```env
-APP_URL=https://tu-dominio.com
-DATABASE_MODE=internal
-POSTGRES_HOST=postgres
-POSTGRES_PORT=5432
-POSTGRES_DB=baseboilerplate
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=una-password-segura
-POSTGRES_SSL=false
-```
-
-## Producción con Postgres externo
-
-```env
-APP_URL=https://tu-dominio.com
-DATABASE_MODE=external
-DATABASE_URL=postgres://user:password@host:5432/database
-POSTGRES_SSL=true
-```
-
-## Notas importantes
-
-- `APP_URL` debe ser correcta o los redirects absolutos fallarán
-- `DATABASE_MODE` debe estar definido de forma explícita en cada entorno
-- los secretos de producción no deben reutilizar valores de desarrollo
-- si activas pagos reales, debes revisar también webhooks y persistencia de órdenes
-
-## Relación con el código
-
-La resolución actual de entorno vive principalmente en:
-
-- [src/lib/config/env.ts](/root/projects/baseboilerplate/src/lib/config/env.ts)
-- [src/lib/config/database.ts](/root/projects/baseboilerplate/src/lib/config/database.ts)
-

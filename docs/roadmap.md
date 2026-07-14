@@ -11,7 +11,7 @@ Hoy la base ya:
 - pasa `lint`
 - pasa `typecheck`
 - soporta Docker y Coolify
-- integra Clerk
+- integra Better Auth
 - integra PostgreSQL interno o externo
 - tiene arquitectura extensible por módulos
 
@@ -34,18 +34,17 @@ Entregables:
 - documentación de bootstrap
 - validación de `db:generate` y `db:migrate`
 
-### 2. Webhooks de Clerk
+### 2. Auth avanzada
 
 Objetivo:
 
-- sincronizar altas, bajas y cambios de usuario sin depender del acceso a páginas autenticadas
+- ampliar Better Auth solo si el producto necesita recuperación de contraseña, verificación de email u OAuth
 
 Entregables:
 
-- endpoint de webhook
-- validación de firma
-- sync de `users`
-- actualización de rol, email, estado e imagen
+- recuperación de contraseña
+- verificación de email
+- OAuth opcional
 
 ### 3. Seeds iniciales
 
@@ -182,7 +181,7 @@ Entregables:
 ## Checklist de salida a “9.5/10”
 
 - migraciones versionadas listas
-- webhook Clerk funcionando
+- auth base con Better Auth funcionando
 - seeds reproducibles
 - RBAC por workspace
 - tests mínimos automatizados
@@ -193,7 +192,7 @@ Entregables:
 ## Orden recomendado de ejecución
 
 1. migraciones
-2. webhooks Clerk
+2. auth avanzada si el producto la necesita
 3. seeds
 4. RBAC
 5. onboarding funcional

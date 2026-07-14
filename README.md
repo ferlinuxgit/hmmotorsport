@@ -4,16 +4,18 @@ Boilerplate de `Next.js` orientado a construir webapps universales: marketing si
 
 ## Documentación
 
-La documentación del proyecto vive en [docs/README.md](/root/projects/baseboilerplate/docs/README.md).
+La documentación del proyecto vive en [docs/README.md](docs/README.md).
 
 Lecturas recomendadas:
 
-- [Visión global](/root/projects/baseboilerplate/docs/vision-global.md)
-- [Arquitectura](/root/projects/baseboilerplate/docs/arquitectura.md)
-- [Estado actual](/root/projects/baseboilerplate/docs/estado-actual.md)
-- [Excelencia 10/10](/root/projects/baseboilerplate/docs/excelencia-10-10.md)
-- [Onboarding](/root/projects/baseboilerplate/docs/onboarding.md)
-- [Roadmap](/root/projects/baseboilerplate/docs/roadmap.md)
+- [Visión global](docs/vision-global.md)
+- [Arquitectura](docs/arquitectura.md)
+- [Estado actual](docs/estado-actual.md)
+- [Excelencia 10/10](docs/excelencia-10-10.md)
+- [Onboarding](docs/onboarding.md)
+- [Guía para IA](docs/guia-ia.md)
+- [Producción](docs/produccion.md)
+- [Roadmap](docs/roadmap.md)
 
 ## Stack
 
@@ -21,7 +23,7 @@ Lecturas recomendadas:
 - `Tailwind CSS` + estructura compatible con `shadcn/ui`
 - `PostgreSQL`
 - `Drizzle ORM`
-- `Clerk` para autenticación y gestión de usuarios
+- `Better Auth` para autenticación y sesiones
 - Integración de pagos con `Stripe` y `PayPal`
 - Arquitectura de módulos auto-registrados
 
@@ -46,24 +48,34 @@ La estrategia no es meter todo en el core, sino permitir que las diferencias de 
 
 1. Copia `.env.example` a `.env`
 2. Levanta PostgreSQL con `docker compose up -d`
-3. Configura Clerk (`NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` y `CLERK_SECRET_KEY`)
+3. Configura Better Auth (`BETTER_AUTH_SECRET` y `BETTER_AUTH_URL`)
 4. Instala dependencias con `npm install`
-5. Sincroniza módulos con `npm run modules:sync`
-6. Ejecuta `npm run dev`
+5. Aplica migraciones con `npm run db:migrate`
+6. Carga datos iniciales con `npm run db:seed`
+7. Sincroniza módulos con `npm run modules:sync`
+8. Ejecuta `npm run dev`
+
+En producción configura `RATE_LIMIT_BACKEND=database`, `TRUST_PROXY_HEADERS=true` detrás de un proxy confiable y programa `npm run db:maintenance`.
 
 ## Estado actual del core
 
 - La configuración sensible se valida en runtime de servidor, no en import global
 - La conexión a PostgreSQL se inicializa de forma lazy
+- La base SEO incluye metadata global, Open Graph, sitemap, robots y manifest
 - Checkout solo acepta redirects internos que empiecen por `/`
-- La sincronización básica con Clerk evita escribir en base de datos en cada request si no hay cambios
+- Better Auth reutiliza la tabla `users` del dominio interno y añade `accounts`, `sessions` y `verifications`
 - `npm install`, `npm run lint`, `npm run typecheck` y `npm run build` ya fueron validados
+- El core incluye liveness, readiness, logs estructurados y cabeceras de seguridad base
+- El core incluye rate limiting distribuido para auth, checkout, analítica y endpoints administrativos
+- Los webhooks son idempotentes y conservan un historial mínimo en `payment_events`
+- El CI ejecuta lint, tipos, tests, build, audit, Docker build y smoke HTTP
 
 ## Despliegue con Docker y Coolify
 
 - `Dockerfile` genera una imagen lista para producción
-- `docker-compose.coolify.yml` define el stack de `app + postgres`
-- Puedes usar PostgreSQL interno o externo según `.env`
+- `docker-compose.coolify.yml` define el stack interno de `app + postgres`
+- `docker-compose.external.yml` define un stack solo app para PostgreSQL gestionado o externo
+- El contenedor ejecuta migraciones al arrancar si `RUN_MIGRATIONS=true`
 
 ### Modos de base de datos
 
@@ -87,7 +99,7 @@ DATABASE_MODE=external
 DATABASE_URL=postgres://user:password@host:5432/database
 ```
 
-En modo `external`, el servicio `postgres` puede seguir existiendo en el stack pero la app no lo usará.
+En modo `external`, usa `docker-compose.external.yml` para evitar levantar o esperar un Postgres interno.
 
 ## Estructura
 
@@ -113,36 +125,60 @@ src/
 ## API incluida
 
 - `GET /api/health`
+- `GET /api/live`
+- `GET /api/ready`
 - `GET /api/account/me`
 - `GET /api/admin/users`
+- `GET /api/admin/overview`
+- `POST /api/analytics/events`
+- `POST /api/auth/*`
 - `POST /api/payments/checkout`
+- `POST /api/payments/webhooks/stripe`
+- `POST /api/payments/webhooks/paypal`
 
-## Auth con Clerk
+`POST /api/payments/checkout` requiere sesión autenticada y recibe un `priceId` interno, no importes enviados por el cliente. El backend resuelve precio/producto desde PostgreSQL, crea una orden interna y adjunta el identificador externo del proveedor.
 
-- Define `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` y `CLERK_SECRET_KEY`
-- El provider global vive en `src/app/layout.tsx`
-- La protección de rutas vive en `src/proxy.ts`
+## Auth con Better Auth
+
+- Define `BETTER_AUTH_SECRET` y `BETTER_AUTH_URL`
+- La ruta de autenticación vive en `src/app/api/auth/[...all]/route.ts`
+- La protección de rutas vive en `src/proxy.ts` y la validación fuerte en servidor
 - Las cuentas autenticadas se sincronizan con la tabla `users`
-- El rol admin se controla con `publicMetadata.role = "admin"` en Clerk
+- El rol admin se resuelve por la columna `role` y por `AUTH_ADMIN_EMAILS`
 - Las rutas base incluidas son `/sign-in`, `/sign-up`, `/account`, `/dashboard` y `/admin`
+
+## Backoffice y analítica
+
+- `/admin` incluye un backoffice operativo para usuarios, sesiones, órdenes, billing, módulos, readiness y analítica.
+- `GET /api/admin/overview` expone el resumen para integraciones internas protegidas por rol admin.
+- El tracker de primera parte registra `page_view` en `analytics_events` mediante `POST /api/analytics/events`.
+- La analítica no almacena IP por defecto y usa `sessionId` local para métricas agregadas.
 
 ## Pendientes típicos al usarla en un producto real
 
 - Crear paneles reales para contenido, catálogo o billing
-- Añadir autorización más fina por workspace/roles
-- Añadir webhooks de Clerk para sincronización completa de usuarios
-- Definir migraciones y seeds iniciales
+- Ampliar autorización por workspace a recursos concretos de cada producto
+- Añadir reconciliación periódica de pagos además de webhooks
 
 ## Hacia la excelencia
 
-La base ya está en un estado serio y reutilizable, pero todavía no es `10/10`.
+Como boilerplate base para construir websites y webapps, la base ya alcanza un nivel de producción alto:
 
-El gap principal está en:
+- despliegue reproducible
+- migraciones runtime comprobadas
+- healthchecks y smoke Docker reales
+- validación explícita de configuración de producción
+- rate limiting distribuido en endpoints sensibles
+- webhooks idempotentes y auditables
+- backoffice completo de operación inicial
+- analítica interna de primera parte
+- SEO técnico base
+- observabilidad y trazabilidad iniciales
 
-- migraciones y seeds
-- sync robusta de identidad
-- RBAC más fino
-- tests automatizados
-- observabilidad y operación
+Lo que sigue faltando ya no pertenece al boilerplate genérico, sino al producto concreto que se construya encima:
 
-La explicación detallada está en [docs/excelencia-10-10.md](/root/projects/baseboilerplate/docs/excelencia-10-10.md).
+- paneles reales de negocio
+- métricas y alertas del entorno final
+- tests de integración específicos del dominio
+
+El detalle operativo vive en [docs/excelencia-10-10.md](docs/excelencia-10-10.md) y [docs/produccion.md](docs/produccion.md).

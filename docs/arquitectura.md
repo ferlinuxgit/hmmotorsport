@@ -14,7 +14,7 @@ Next.js App Router
 Servicios del core (auth, db, payments, modules, config)
         |
         v
-PostgreSQL / Clerk / Stripe / PayPal
+PostgreSQL / Better Auth / Stripe / PayPal
 ```
 
 ## Capas principales
@@ -103,7 +103,7 @@ La extensibilidad actual depende de esta secuencia:
 
 ## Contrato de módulo
 
-El contrato base está en [src/lib/modules/contracts.ts](/root/projects/baseboilerplate/src/lib/modules/contracts.ts).
+El contrato base está en [src/lib/modules/contracts.ts](../src/lib/modules/contracts.ts).
 
 Hoy un módulo puede aportar:
 
@@ -117,12 +117,12 @@ Eso permite que el core sea genérico y la personalización viva en extensiones.
 
 ## Capa de configuración
 
-La configuración está separada por dominios en [src/lib/config/env.ts](/root/projects/baseboilerplate/src/lib/config/env.ts).
+La configuración está separada por dominios en [src/lib/config/env.ts](../src/lib/config/env.ts).
 
 Actualmente existen accesos separados para:
 
 - `getAppEnv()`
-- `getClerkEnv()`
+- `getBetterAuthEnv()`
 - `getDatabaseEnv()`
 - `getPaymentsEnv()`
 
@@ -132,7 +132,7 @@ La razón de esta separación es evitar que el build o una ruta simple fallen po
 
 ### Cliente
 
-El acceso principal está en [src/lib/db/client.ts](/root/projects/baseboilerplate/src/lib/db/client.ts).
+El acceso principal está en [src/lib/db/client.ts](../src/lib/db/client.ts).
 
 Características:
 
@@ -145,8 +145,8 @@ Características:
 
 El esquema se divide por dominio:
 
-- [src/lib/db/schema/core.ts](/root/projects/baseboilerplate/src/lib/db/schema/core.ts)
-- [src/lib/db/schema/billing.ts](/root/projects/baseboilerplate/src/lib/db/schema/billing.ts)
+- [src/lib/db/schema/core.ts](../src/lib/db/schema/core.ts)
+- [src/lib/db/schema/billing.ts](../src/lib/db/schema/billing.ts)
 
 `core.ts` contiene identidad, workspaces y contenido.
 
@@ -154,17 +154,17 @@ El esquema se divide por dominio:
 
 ## Capa de autenticación
 
-La autenticación usa Clerk.
+La autenticación usa Better Auth.
 
 Piezas principales:
 
-- provider global en [src/app/layout.tsx](/root/projects/baseboilerplate/src/app/layout.tsx)
-- protección de rutas en [src/proxy.ts](/root/projects/baseboilerplate/src/proxy.ts)
-- helpers de servidor en [src/lib/auth/server.ts](/root/projects/baseboilerplate/src/lib/auth/server.ts)
+- provider global en [src/app/layout.tsx](../src/app/layout.tsx)
+- protección de rutas en [src/proxy.ts](../src/proxy.ts)
+- helpers de servidor en [src/lib/auth/server.ts](../src/lib/auth/server.ts)
 
 Flujo actual:
 
-1. el usuario se autentica en Clerk
+1. el usuario se autentica en Better Auth
 2. una ruta protegida obtiene la cuenta actual
 3. se sincroniza o actualiza el registro interno en `users` si hay cambios
 4. la app opera con una representación interna tipada
@@ -173,10 +173,10 @@ Flujo actual:
 
 La abstracción de pagos vive en:
 
-- [src/lib/payments/types.ts](/root/projects/baseboilerplate/src/lib/payments/types.ts)
-- [src/lib/payments/index.ts](/root/projects/baseboilerplate/src/lib/payments/index.ts)
-- [src/lib/payments/providers/stripe.ts](/root/projects/baseboilerplate/src/lib/payments/providers/stripe.ts)
-- [src/lib/payments/providers/paypal.ts](/root/projects/baseboilerplate/src/lib/payments/providers/paypal.ts)
+- [src/lib/payments/types.ts](../src/lib/payments/types.ts)
+- [src/lib/payments/index.ts](../src/lib/payments/index.ts)
+- [src/lib/payments/providers/stripe.ts](../src/lib/payments/providers/stripe.ts)
+- [src/lib/payments/providers/paypal.ts](../src/lib/payments/providers/paypal.ts)
 
 El contrato actual unifica:
 
@@ -190,6 +190,8 @@ Esto evita acoplar el resto de la app a APIs específicas de cada gateway.
 
 Endpoints actuales:
 
+- `GET /api/live`
+- `GET /api/ready`
 - `GET /api/health`
 - `GET /api/account/me`
 - `GET /api/admin/users`
@@ -208,9 +210,9 @@ El proyecto soporta:
 
 Archivos clave:
 
-- [Dockerfile](/root/projects/baseboilerplate/Dockerfile)
-- [docker-compose.yml](/root/projects/baseboilerplate/docker-compose.yml)
-- [docker-compose.coolify.yml](/root/projects/baseboilerplate/docker-compose.coolify.yml)
+- [Dockerfile](../Dockerfile)
+- [docker-compose.yml](../docker-compose.yml)
+- [docker-compose.coolify.yml](../docker-compose.coolify.yml)
 
 ## Decisiones arquitectónicas importantes ya tomadas
 
@@ -232,11 +234,10 @@ Permite que marketing, commerce y SaaS coexistan sin convertir el core en una ve
 
 ## Limitaciones actuales de la arquitectura
 
-- aún no hay migraciones versionadas
-- la sincronización con Clerk no usa webhooks todavía
+- el schema inicial está versionado en una sola migración limpia
+- los flujos avanzados de Better Auth se habilitan solo cuando el producto los necesita
 - RBAC sigue siendo simple
-- no hay test suite automatizada
-- la observabilidad es mínima
+- la cobertura de tests sigue siendo ligera
+- la observabilidad ya existe como base, pero no sustituye métricas/alertas del proyecto final
 
 La arquitectura es buena como base. Todavía no es excelente como plataforma madura.
-

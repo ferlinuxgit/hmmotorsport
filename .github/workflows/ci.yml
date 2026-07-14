@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - run: npm run audit
+      - run: docker build -t baseboilerplate-ci .
+      - run: docker network create baseboilerplate-ci-net
+      - run: docker run -d --name baseboilerplate-ci-db --network baseboilerplate-ci-net -p 5433:5432 -e POSTGRES_DB=baseboilerplate -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres postgres:16-alpine
+      - run: for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do docker exec baseboilerplate-ci-db pg_isready -U postgres -d baseboilerplate && exit 0; sleep 2; done; exit 1
+      - run: docker run -d --name baseboilerplate-smoke --network baseboilerplate-ci-net -p 3001:3000 -e APP_URL=http://localhost:3001 -e DEPLOYMENT_ENV=production -e BUILD_SHA=${{ github.sha }} -e RATE_LIMIT_BACKEND=database -e TRUST_PROXY_HEADERS=true -e BETTER_AUTH_SECRET=ci-better-auth-secret-with-at-least-32-characters -e BETTER_AUTH_URL=http://localhost:3001 -e DATABASE_MODE=external -e DATABASE_URL=postgres://postgres:postgres@baseboilerplate-ci-db:5432/baseboilerplate -e STRIPE_SECRET_KEY=ci-stripe-secret-placeholder-but-not-default -e STRIPE_WEBHOOK_SECRET=ci-stripe-webhook-secret-placeholder-but-not-default -e PAYPAL_CLIENT_ID=ci-paypal-client-id-placeholder-but-not-default -e PAYPAL_CLIENT_SECRET=ci-paypal-client-secret-placeholder-but-not-default -e PAYPAL_WEBHOOK_ID=ci-paypal-webhook-id-placeholder-but-not-default -e RUN_MIGRATIONS=true baseboilerplate-ci
+      - run: for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do curl -fsS http://127.0.0.1:3001/api/live && exit 0; sleep 2; done; docker logs baseboilerplate-smoke; exit 1
+      - run: TEST_DATABASE_URL=postgres://postgres:postgres@127.0.0.1:5433/baseboilerplate node --import tsx --test tests/database.integration.test.ts
+      - run: BASE_URL=http://127.0.0.1:3001 npm run test:smoke
+      - run: docker rm -f baseboilerplate-smoke baseboilerplate-ci-db
+      - run: docker network rm baseboilerplate-ci-net

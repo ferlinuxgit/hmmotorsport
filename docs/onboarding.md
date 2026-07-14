@@ -20,7 +20,7 @@ La regla principal es simple: extender sin degradar el core.
 - base compatible con `shadcn/ui`
 - `PostgreSQL`
 - `Drizzle ORM`
-- `Clerk`
+- `Better Auth`
 - `Stripe`
 - `PayPal`
 - despliegue con `Docker` y `Coolify`
@@ -56,8 +56,8 @@ cp .env.example .env
 
 3. Configura como mínimo:
 
-- `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
-- `CLERK_SECRET_KEY`
+- `BETTER_AUTH_SECRET`
+- `BETTER_AUTH_URL`
 - `APP_URL`
 
 4. Levanta PostgreSQL local
@@ -94,7 +94,7 @@ npm run db:migrate
 
 - estructura base de frontend y backend
 - dashboard base
-- auth con Clerk
+- auth con Better Auth
 - cuenta de usuario
 - ruta admin
 - abstracción de pagos
@@ -106,7 +106,7 @@ npm run db:migrate
 - migraciones reales para nuevos cambios de esquema
 - paneles funcionales de negocio
 - permisos finos por workspace
-- webhooks completos de Clerk
+- recuperación de contraseña y verificación de email si el producto lo requiere
 - catálogo, billing y contenido reales
 - tests de negocio
 
@@ -140,14 +140,14 @@ Pregunta primero:
 
 ## Auth y roles
 
-La autenticación usa `Clerk`.
+La autenticación usa `Better Auth`.
 
 Puntos base:
 
 - provider global en `src/app/layout.tsx`
 - protección de rutas en `src/proxy.ts`
 - cuenta sincronizada en tabla `users`
-- admin controlado por `publicMetadata.role = "admin"`
+- admin controlado por la columna `role` y `AUTH_ADMIN_EMAILS`
 
 Rutas incluidas:
 
@@ -215,6 +215,6 @@ La base ya:
 Pero todavía conviene reforzar:
 
 - migraciones versionadas
-- webhooks de Clerk
+- tests de integración de auth
 - tests automatizados
 - autorización más fina

@@ -1,10 +1,29 @@
-import { SignIn } from "@clerk/nextjs";
+import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 
-export default function SignInPage() {
+import { SignInForm } from "@/components/auth/sign-in-form";
+import { SiteHeader } from "@/components/layout/site-header";
+import { getCurrentAccount } from "@/lib/auth/server";
+
+export default async function SignInPage() {
+  const account = await getCurrentAccount();
+
+  if (account) {
+    redirect("/dashboard");
+  }
+
   return (
-    <main className="mx-auto flex min-h-screen max-w-7xl items-center justify-center px-6 py-12">
-      <SignIn />
-    </main>
+    <div className="min-h-screen">
+      <SiteHeader />
+      <main className="mx-auto flex max-w-lg px-6 py-16">
+        <div className="w-full">
+          <SignInForm />
+        </div>
+      </main>
+    </div>
   );
 }
-
+export const metadata: Metadata = {
+  title: "Entrar",
+  robots: { index: false, follow: false }
+};

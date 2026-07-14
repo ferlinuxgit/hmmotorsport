@@ -30,13 +30,13 @@ También se permite `module.tsx`.
 
 ## Registro automático
 
-El script [scripts/sync-modules.mjs](/root/projects/baseboilerplate/scripts/sync-modules.mjs) detecta módulos instalados y genera [src/modules/generated.ts](/root/projects/baseboilerplate/src/modules/generated.ts).
+El script [scripts/sync-modules.mjs](../scripts/sync-modules.mjs) detecta módulos instalados y genera [src/modules/generated.ts](../src/modules/generated.ts).
 
-Ese archivo es consumido por [src/lib/modules/loader.ts](/root/projects/baseboilerplate/src/lib/modules/loader.ts).
+Ese archivo es consumido por [src/lib/modules/loader.ts](../src/lib/modules/loader.ts).
 
 ## Contrato actual
 
-El contrato base está en [src/lib/modules/contracts.ts](/root/projects/baseboilerplate/src/lib/modules/contracts.ts).
+El contrato base está en [src/lib/modules/contracts.ts](../src/lib/modules/contracts.ts).
 
 Un módulo define:
 

@@ -1,5 +1,7 @@
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
+import type { Metadata } from "next";
+
 import { Hero } from "@/components/marketing/hero";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -84,4 +86,7 @@ export default function HomePage() {
     </div>
   );
 }
+export const metadata: Metadata = {
+  alternates: { canonical: "/" }
+};
 

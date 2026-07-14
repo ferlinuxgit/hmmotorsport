@@ -11,7 +11,9 @@ Si es tu primera vez en el proyecto, este es el orden recomendado:
 3. [Arquitectura](./arquitectura.md)
 4. [Estado actual](./estado-actual.md)
 5. [Excelencia 10/10](./excelencia-10-10.md)
-6. [Roadmap](./roadmap.md)
+6. [Guía para IA](./guia-ia.md)
+7. [Producción](./produccion.md)
+8. [Roadmap](./roadmap.md)
 
 ## Índice completo
 
@@ -26,6 +28,8 @@ Si es tu primera vez en el proyecto, este es el orden recomendado:
 - [Modelo de datos](./modelo-datos.md)
 - [Módulos y extensiones](./modulos-y-extensiones.md)
 - [Buenas prácticas](./buenas-practicas.md)
+- [Guía para IA](./guia-ia.md)
+- [Producción](./produccion.md)
 - [Deploy en Coolify](./deploy-coolify.md)
 - [Roadmap](./roadmap.md)
 

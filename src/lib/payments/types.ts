@@ -1,9 +1,11 @@
 export interface CheckoutInput {
-  amount: number;
+  orderId: string;
+  amount: string;
   currency: string;
   description: string;
   successUrl: string;
   cancelUrl: string;
+  customerEmail?: string;
 }
 
 export interface CheckoutSession {
@@ -16,4 +18,3 @@ export interface PaymentProvider {
   key: "stripe" | "paypal";
   createCheckoutSession(input: CheckoutInput): Promise<CheckoutSession>;
 }
-

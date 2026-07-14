@@ -13,6 +13,7 @@ El modelo intenta cubrir tres necesidades desde la base:
 - identidad y workspaces
 - contenido público
 - commerce y billing
+- analítica de primera parte
 
 Esto permite soportar varios tipos de producto sin rehacer las entidades fundamentales.
 
@@ -20,8 +21,8 @@ Esto permite soportar varios tipos de producto sin rehacer las entidades fundame
 
 El schema se divide hoy en dos archivos principales:
 
-- [src/lib/db/schema/core.ts](/root/projects/baseboilerplate/src/lib/db/schema/core.ts)
-- [src/lib/db/schema/billing.ts](/root/projects/baseboilerplate/src/lib/db/schema/billing.ts)
+- [src/lib/db/schema/core.ts](../src/lib/db/schema/core.ts)
+- [src/lib/db/schema/billing.ts](../src/lib/db/schema/billing.ts)
 
 ## Dominio `core`
 
@@ -32,10 +33,10 @@ Representa la cuenta interna de usuario de la aplicación.
 Campos principales:
 
 - `id`
-- `clerkId`
 - `email`
 - `name`
 - `imageUrl`
+- `emailVerified`
 - `role`
 - `active`
 - `lastSignInAt`
@@ -44,12 +45,11 @@ Campos principales:
 
 Intención:
 
-- desacoplar el dominio interno de Clerk
+- desacoplar el dominio interno de Better Auth
 - mantener una referencia local para permisos, relaciones y evolución futura
 
 Notas:
 
-- `clerkId` es único
 - `email` es único
 - el rol actual es simple: `user` o `admin`
 
@@ -117,6 +117,34 @@ Notas:
 
 - todavía no existe un CMS interno que gestione esta tabla
 
+## `analytics_events`
+
+Representa eventos de analítica de primera parte.
+
+Campos principales:
+
+- `id`
+- `eventName`
+- `sessionId`
+- `userId`
+- `path`
+- `referrer`
+- `userAgent`
+- `properties`
+- `createdAt`
+
+Intención:
+
+- medir tráfico, uso y eventos de producto sin depender obligatoriamente de terceros
+- alimentar el backoffice con métricas operativas
+- asociar eventos a usuario cuando existe sesión
+
+Notas:
+
+- no almacena IP por defecto
+- `properties` no debe contener secretos, tokens, datos de pago ni payloads sensibles
+- para varias réplicas no hace falta cambiar el modelo, solo cuidar el volumen y retención
+
 ## Dominio `billing`
 
 ## `products`
@@ -164,6 +192,15 @@ Intención:
 Notas:
 
 - `externalId` sirve para mapear entidades de Stripe/PayPal u otros providers
+- `interval` queda reservado para una extensión futura de suscripciones; el checkout base actual es de pago único
+
+## `payment_events`
+
+Registro idempotente y auditable de eventos verificados de Stripe y PayPal. La combinación `provider + eventId` es única y el registro se escribe en la misma transacción que el cambio de estado de la orden.
+
+## `rate_limit_buckets`
+
+Buckets compartidos de rate limiting para despliegues con múltiples réplicas. Los registros expirados se eliminan con `npm run db:maintenance`.
 
 ## `orders`
 
@@ -213,11 +250,12 @@ products
 - contenido público
 - catálogo inicial
 - órdenes básicas
+- analítica interna inicial
 
 ## Qué todavía no modela del todo
 
 - permisos finos por workspace
-- auditoría y eventos
+- auditoría avanzada de acciones administrativas
 - suscripciones completas
 - estados ricos de pago y lifecycle
 - organización editorial más avanzada
@@ -226,7 +264,7 @@ products
 
 ### Fase 1
 
-- versionar migraciones del modelo actual
+- mantener una sola migración inicial mientras el boilerplate no tenga instalaciones reales
 - añadir seeds
 
 ### Fase 2
@@ -245,4 +283,3 @@ products
 - no duplicar fuentes de verdad
 - no modelar de forma “global” algo que probablemente será tenant-aware
 - documentar cada ampliación importante
-

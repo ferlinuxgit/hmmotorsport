@@ -30,13 +30,12 @@ export function AccountOverview({ account }: { account: AuthAccount }) {
       <Card>
         <CardHeader>
           <CardDescription>Cuenta interna</CardDescription>
-          <CardTitle>Sincronizada</CardTitle>
+          <CardTitle>Usuario base</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="break-all text-sm text-muted-foreground">{account.clerkId}</p>
+          <p className="break-all text-sm text-muted-foreground">{account.id}</p>
         </CardContent>
       </Card>
     </div>
   );
 }
-
