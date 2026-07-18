@@ -7,7 +7,9 @@ export function getInstalledModules(): AppModule[] {
 }
 
 export function getSiteNavigation(): NavItem[] {
-  return installedModules.flatMap((module) => module.navigation.filter((item) => item.segment === "site"));
+  return installedModules
+    .flatMap((module) => module.navigation.filter((item) => item.segment === "site"))
+    .sort((left, right) => (left.href === "/" ? -1 : right.href === "/" ? 1 : left.title.localeCompare(right.title)));
 }
 
 export function getAppNavigation(): NavItem[] {
@@ -25,4 +27,3 @@ export function getDashboardCards(): DashboardCard[] {
 export function getEnabledPaymentProviders(): PaymentProviderKey[] {
   return [...new Set(installedModules.flatMap((module) => module.paymentProviders))];
 }
-

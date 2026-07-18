@@ -6,7 +6,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth/auth-client";
 
-export function SignOutButton() {
+export function SignOutButton({ className }: { className?: string }) {
   const router = useRouter();
   const [isPending, setIsPending] = useState(false);
 
@@ -28,7 +28,7 @@ export function SignOutButton() {
   }
 
   return (
-    <Button variant="outline" onClick={handleSignOut} disabled={isPending}>
+    <Button className={className} variant="outline" onClick={handleSignOut} disabled={isPending}>
       {isPending ? "Saliendo..." : "Salir"}
     </Button>
   );

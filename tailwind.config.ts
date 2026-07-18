@@ -21,7 +21,13 @@ const config: Config = {
         "accent-foreground": "hsl(var(--accent-foreground))",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))"
+        ring: "hsl(var(--ring))",
+        destructive: "hsl(var(--destructive))",
+        "destructive-foreground": "hsl(var(--destructive-foreground))"
+      },
+      fontFamily: {
+        sans: ["var(--font-heading)", "sans-serif"],
+        mono: ["var(--font-mono)", "monospace"]
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -29,7 +35,7 @@ const config: Config = {
         sm: "calc(var(--radius) - 4px)"
       },
       boxShadow: {
-        panel: "0 24px 80px -32px rgba(15, 23, 42, 0.35)"
+        panel: "0 24px 80px -36px hsl(var(--foreground) / 0.28)"
       }
     }
   },
@@ -37,4 +43,3 @@ const config: Config = {
 };
 
 export default config;
-

@@ -21,6 +21,7 @@ Lecturas recomendadas:
 
 - `Next.js` con `App Router`
 - `Tailwind CSS` + estructura compatible con `shadcn/ui`
+- `Phosphor Icons` con una única familia visual
 - `PostgreSQL`
 - `Drizzle ORM`
 - `Better Auth` para autenticación y sesiones
@@ -62,6 +63,8 @@ En producción configura `RATE_LIMIT_BACKEND=database`, `TRUST_PROXY_HEADERS=tru
 - La configuración sensible se valida en runtime de servidor, no en import global
 - La conexión a PostgreSQL se inicializa de forma lazy
 - La base SEO incluye metadata global, Open Graph, sitemap, robots y manifest
+- El build verifica que Tailwind genere utilities esenciales antes de considerarse válido
+- La UI incluye navegación móvil, temas por preferencia del sistema y estados globales de loading, error y 404
 - Checkout solo acepta redirects internos que empiecen por `/`
 - Better Auth reutiliza la tabla `users` del dominio interno y añade `accounts`, `sessions` y `verifications`
 - `npm install`, `npm run lint`, `npm run typecheck` y `npm run build` ya fueron validados

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import { SignInForm } from "@/components/auth/sign-in-form";
-import { SiteHeader } from "@/components/layout/site-header";
+import { AuthShell } from "@/components/auth/auth-shell";
 import { getCurrentAccount } from "@/lib/auth/server";
 
 export default async function SignInPage() {
@@ -13,14 +13,9 @@ export default async function SignInPage() {
   }
 
   return (
-    <div className="min-h-screen">
-      <SiteHeader />
-      <main className="mx-auto flex max-w-lg px-6 py-16">
-        <div className="w-full">
-          <SignInForm />
-        </div>
-      </main>
-    </div>
+    <AuthShell title="Continúa donde lo dejaste." description="Entra para revisar módulos, cuenta y operación desde un workspace autenticado.">
+      <SignInForm />
+    </AuthShell>
   );
 }
 export const metadata: Metadata = {

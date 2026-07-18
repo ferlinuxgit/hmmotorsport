@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { Activity, Boxes, CircleDollarSign, CreditCard, Database, ShieldCheck, Users } from "lucide-react";
+import { CreditCard, Cube, CurrencyDollar, Database, Pulse, ShieldCheck, Users } from "@phosphor-icons/react/dist/ssr";
 
 import { SiteHeader } from "@/components/layout/site-header";
 import { Badge } from "@/components/ui/badge";
@@ -45,23 +45,21 @@ function MetricCard({
   title: string;
   value: string | number;
   description: string;
-  icon: typeof Activity;
+  icon: typeof Pulse;
 }) {
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-start justify-between gap-4 space-y-0">
+    <article className="border-t border-border/80 py-6">
+      <div className="flex items-start justify-between gap-4">
         <div className="space-y-2">
-          <CardDescription>{title}</CardDescription>
-          <CardTitle className="text-3xl">{value}</CardTitle>
+          <p className="text-sm text-muted-foreground">{title}</p>
+          <p className="font-mono text-3xl font-semibold tracking-[-0.04em] tabular-nums">{value}</p>
         </div>
-        <div className="rounded-full border border-border bg-secondary p-3 text-muted-foreground">
-          <Icon className="size-5" aria-hidden="true" />
+        <div className="text-primary">
+          <Icon size={24} weight="duotone" aria-hidden="true" />
         </div>
-      </CardHeader>
-      <CardContent>
-        <p className="text-sm text-muted-foreground">{description}</p>
-      </CardContent>
-    </Card>
+      </div>
+      <p className="mt-5 max-w-[36ch] text-sm leading-6 text-muted-foreground">{description}</p>
+    </article>
   );
 }
 
@@ -112,26 +110,26 @@ export default async function AdminPage() {
   const revenueLabel =
     overview.orders.revenueByCurrency.length === 0
       ? formatMoney("0", "USD")
-      : overview.orders.revenueByCurrency.map((item) => formatMoney(item.revenue, item.currency)).join(" · ");
+      : overview.orders.revenueByCurrency.map((item) => formatMoney(item.revenue, item.currency)).join(" / ");
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-[100dvh]">
       <SiteHeader />
-      <main className="mx-auto max-w-7xl space-y-8 px-6 py-10">
+      <main id="main-content" className="mx-auto max-w-7xl space-y-10 px-4 py-10 sm:px-6 sm:py-14">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div className="space-y-3">
-            <Badge>Backoffice</Badge>
-            <h1 className="text-3xl font-semibold">Panel de control</h1>
+            <p className="font-mono text-xs font-medium uppercase tracking-[0.14em] text-primary">Backoffice</p>
+            <h1 className="text-4xl font-semibold tracking-[-0.04em] sm:text-5xl">Panel de control</h1>
             <p className="max-w-3xl text-sm leading-6 text-muted-foreground">
               Operación interna para usuarios, billing, módulos, salud de producción y analítica de primera parte.
             </p>
           </div>
-          <div className="rounded-xl border border-border px-4 py-3 text-sm text-muted-foreground">
+          <div className="border-l-2 border-primary pl-4 text-sm text-muted-foreground">
             Sesión admin: <span className="font-medium text-foreground">{account.email}</span>
           </div>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-x-8 md:grid-cols-2 xl:grid-cols-4">
           <MetricCard
             title="Usuarios"
             value={overview.users.total}
@@ -142,7 +140,7 @@ export default async function AdminPage() {
             title="Revenue pagado"
             value={revenueLabel}
             description={`${overview.orders.paid} órdenes pagadas de ${overview.orders.total} totales`}
-            icon={CircleDollarSign}
+            icon={CurrencyDollar}
           />
           <MetricCard
             title="Sesiones"
@@ -154,7 +152,7 @@ export default async function AdminPage() {
             title="Analytics"
             value={overview.analytics.events}
             description={`${overview.analytics.sessions} sesiones y ${overview.analytics.users} usuarios identificados en 14 días`}
-            icon={Activity}
+            icon={Pulse}
           />
         </div>
 
@@ -196,6 +194,7 @@ export default async function AdminPage() {
             </CardHeader>
             <CardContent className="overflow-x-auto">
               <table className="w-full min-w-[720px] text-left text-sm">
+                <caption className="sr-only">Usuarios creados recientemente y su estado de acceso</caption>
                 <thead className="border-b text-xs uppercase text-muted-foreground">
                   <tr>
                     <th className="py-3 pr-4 font-medium">Usuario</th>
@@ -205,8 +204,10 @@ export default async function AdminPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {overview.recentUsers.map((user) => (
-                    <tr key={user.id} className="border-b border-border/70">
+                  {overview.recentUsers.length === 0 ? (
+                    <tr><td colSpan={4} className="py-10 text-center text-muted-foreground">Sin usuarios todavía</td></tr>
+                  ) : overview.recentUsers.map((user) => (
+                    <tr key={user.id} className="border-b border-border/70 last:border-b-0">
                       <td className="py-4 pr-4">
                         <div className="font-medium">{user.name ?? user.email}</div>
                         <div className="text-xs text-muted-foreground">Alta {formatDate(user.createdAt)}</div>
@@ -233,13 +234,13 @@ export default async function AdminPage() {
             </CardHeader>
             <CardContent className="space-y-3">
               {overview.modules.map((module) => (
-                <div key={module.key} className="rounded-xl border border-border px-4 py-3">
+                <div key={module.key} className="border-b border-border/80 py-4 last:border-b-0">
                   <div className="flex items-center justify-between gap-3">
                     <div>
                       <p className="font-medium">{module.name}</p>
                       <p className="text-xs text-muted-foreground">{module.area}</p>
                     </div>
-                    <Boxes className="size-4 text-muted-foreground" aria-hidden="true" />
+                    <Cube size={17} weight="duotone" className="text-muted-foreground" aria-hidden="true" />
                   </div>
                   <p className="mt-2 text-sm text-muted-foreground">{module.description}</p>
                 </div>
@@ -256,6 +257,7 @@ export default async function AdminPage() {
             </CardHeader>
             <CardContent className="overflow-x-auto">
               <table className="w-full min-w-[760px] text-left text-sm">
+                <caption className="sr-only">Órdenes recientes con proveedor, estado y total</caption>
                 <thead className="border-b text-xs uppercase text-muted-foreground">
                   <tr>
                     <th className="py-3 pr-4 font-medium">Orden</th>
@@ -299,25 +301,25 @@ export default async function AdminPage() {
               <CardDescription>Productos, precios y providers habilitados por módulos.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-3 gap-3 text-center">
-                <div className="rounded-xl border border-border p-3">
-                  <p className="text-2xl font-semibold">{overview.products.total}</p>
+              <div className="grid grid-cols-3 divide-x divide-border border-y border-border py-4 text-center">
+                <div className="px-2">
+                  <p className="font-mono text-2xl font-semibold tabular-nums">{overview.products.total}</p>
                   <p className="text-xs text-muted-foreground">Productos</p>
                 </div>
-                <div className="rounded-xl border border-border p-3">
-                  <p className="text-2xl font-semibold">{overview.products.prices}</p>
+                <div className="px-2">
+                  <p className="font-mono text-2xl font-semibold tabular-nums">{overview.products.prices}</p>
                   <p className="text-xs text-muted-foreground">Precios</p>
                 </div>
-                <div className="rounded-xl border border-border p-3">
-                  <p className="text-2xl font-semibold">{overview.orders.pending}</p>
+                <div className="px-2">
+                  <p className="font-mono text-2xl font-semibold tabular-nums">{overview.orders.pending}</p>
                   <p className="text-xs text-muted-foreground">Pendientes</p>
                 </div>
               </div>
               <div className="space-y-2">
                 {overview.enabledPaymentProviders.map((provider) => (
-                  <div key={provider} className="flex items-center justify-between rounded-xl border border-border px-4 py-3">
+                  <div key={provider} className="flex items-center justify-between border-b border-border/80 py-3 last:border-b-0">
                     <span className="capitalize">{provider}</span>
-                    <CreditCard className="size-4 text-muted-foreground" aria-hidden="true" />
+                    <CreditCard size={17} weight="duotone" className="text-muted-foreground" aria-hidden="true" />
                   </div>
                 ))}
               </div>
@@ -336,7 +338,7 @@ export default async function AdminPage() {
                 <p className="text-sm text-muted-foreground">Sin page views todavía.</p>
               ) : (
                 overview.analytics.pageViews.map((page) => (
-                  <div key={page.path} className="flex items-center justify-between gap-4 rounded-xl border border-border px-4 py-3">
+                  <div key={page.path} className="flex items-center justify-between gap-4 border-b border-border/80 py-3 last:border-b-0">
                     <span className="truncate font-mono text-xs">{page.path}</span>
                     <span className="text-sm font-medium">{page.views}</span>
                   </div>
@@ -355,7 +357,7 @@ export default async function AdminPage() {
                 <p className="text-sm text-muted-foreground">Sin eventos todavía.</p>
               ) : (
                 overview.recentAnalyticsEvents.map((event) => (
-                  <div key={event.id} className="flex items-center justify-between gap-4 rounded-xl border border-border px-4 py-3">
+                  <div key={event.id} className="flex items-center justify-between gap-4 border-b border-border/80 py-3 last:border-b-0">
                     <div className="min-w-0">
                       <p className="font-medium">{event.eventName}</p>
                       <p className="truncate font-mono text-xs text-muted-foreground">{event.path}</p>
@@ -373,25 +375,25 @@ export default async function AdminPage() {
             <CardTitle>Datos operativos</CardTitle>
             <CardDescription>Estado resumido de los modelos transversales del boilerplate.</CardDescription>
           </CardHeader>
-          <CardContent className="grid gap-3 md:grid-cols-4">
-            <div className="rounded-xl border border-border p-4">
-              <Database className="mb-3 size-5 text-muted-foreground" aria-hidden="true" />
-              <p className="text-2xl font-semibold">{overview.workspaces.total}</p>
+          <CardContent className="grid border-t border-border/80 md:grid-cols-4 md:divide-x md:divide-border">
+            <div className="border-b border-border/80 py-5 md:border-b-0 md:px-5 md:first:pl-0">
+              <Database size={21} weight="duotone" className="mb-3 text-muted-foreground" aria-hidden="true" />
+              <p className="font-mono text-2xl font-semibold tabular-nums">{overview.workspaces.total}</p>
               <p className="text-sm text-muted-foreground">Workspaces</p>
             </div>
-            <div className="rounded-xl border border-border p-4">
-              <Users className="mb-3 size-5 text-muted-foreground" aria-hidden="true" />
-              <p className="text-2xl font-semibold">{overview.workspaces.memberships}</p>
+            <div className="border-b border-border/80 py-5 md:border-b-0 md:px-5">
+              <Users size={21} weight="duotone" className="mb-3 text-muted-foreground" aria-hidden="true" />
+              <p className="font-mono text-2xl font-semibold tabular-nums">{overview.workspaces.memberships}</p>
               <p className="text-sm text-muted-foreground">Miembros</p>
             </div>
-            <div className="rounded-xl border border-border p-4">
-              <Activity className="mb-3 size-5 text-muted-foreground" aria-hidden="true" />
-              <p className="text-2xl font-semibold">{overview.orders.failed}</p>
+            <div className="border-b border-border/80 py-5 md:border-b-0 md:px-5">
+              <Pulse size={21} weight="duotone" className="mb-3 text-muted-foreground" aria-hidden="true" />
+              <p className="font-mono text-2xl font-semibold tabular-nums">{overview.orders.failed}</p>
               <p className="text-sm text-muted-foreground">Órdenes fallidas/canceladas</p>
             </div>
-            <div className="rounded-xl border border-border p-4">
-              <Boxes className="mb-3 size-5 text-muted-foreground" aria-hidden="true" />
-              <p className="text-2xl font-semibold">{overview.modules.length}</p>
+            <div className="py-5 md:px-5 md:last:pr-0">
+              <Cube size={21} weight="duotone" className="mb-3 text-muted-foreground" aria-hidden="true" />
+              <p className="font-mono text-2xl font-semibold tabular-nums">{overview.modules.length}</p>
               <p className="text-sm text-muted-foreground">Módulos activos</p>
             </div>
           </CardContent>

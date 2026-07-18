@@ -11,9 +11,10 @@ Si es tu primera vez en el proyecto, este es el orden recomendado:
 3. [Arquitectura](./arquitectura.md)
 4. [Estado actual](./estado-actual.md)
 5. [Excelencia 10/10](./excelencia-10-10.md)
-6. [Guía para IA](./guia-ia.md)
-7. [Producción](./produccion.md)
-8. [Roadmap](./roadmap.md)
+6. [Sistema visual](./sistema-visual.md)
+7. [Guía para IA](./guia-ia.md)
+8. [Producción](./produccion.md)
+9. [Roadmap](./roadmap.md)
 
 ## Índice completo
 
@@ -22,6 +23,7 @@ Si es tu primera vez en el proyecto, este es el orden recomendado:
 - [Decisiones arquitectónicas](./decisiones-arquitectonicas.md)
 - [Estado actual](./estado-actual.md)
 - [Excelencia 10/10](./excelencia-10-10.md)
+- [Sistema visual](./sistema-visual.md)
 - [Onboarding](./onboarding.md)
 - [Referencia de entorno](./referencia-entorno.md)
 - [Referencia API](./referencia-api.md)

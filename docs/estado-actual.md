@@ -12,6 +12,7 @@ Estado real actual:
 - `npm run typecheck` pasa
 - `npm test` pasa
 - `npm run build` pasa
+- `postbuild` verifica utilities críticas del CSS de producción
 - `npm audit --omit=dev` es parte del checklist
 - `docker build` pasa
 - smoke Docker con `live`, `ready` y `health` pasa contra Postgres temporal
@@ -27,11 +28,15 @@ Estado real actual:
 
 ### UI y estructura
 
-- home pública
-- dashboard base
-- cuenta de usuario
-- vista admin
-- componentes UI base
+- home pública responsive con narrativa técnica completa
+- navegación desktop y móvil accesible
+- dashboard modular con onboarding y estados vacíos
+- cuenta de usuario con identidad y seguridad
+- backoffice operativo con tablas y métricas
+- páginas legales de referencia
+- estados globales de loading, error y 404
+- temas claro y oscuro por preferencia del sistema
+- guard de build para detectar regresiones de Tailwind
 
 ### Backend
 

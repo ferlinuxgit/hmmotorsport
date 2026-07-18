@@ -1,8 +1,8 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss" source("../");
+@config "../../tailwind.config.ts";
 
 :root {
+  color-scheme: light;
   --background: 42 33% 97%;
   --foreground: 222 47% 11%;
   --card: 0 0% 100%;
@@ -20,7 +20,34 @@
   --border: 35 24% 84%;
   --input: 35 24% 84%;
   --ring: 198 83% 27%;
+  --destructive: 0 72% 45%;
+  --destructive-foreground: 0 0% 100%;
   --radius: 1rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --background: 220 24% 8%;
+    --foreground: 42 28% 93%;
+    --card: 220 20% 11%;
+    --card-foreground: 42 28% 93%;
+    --popover: 220 20% 11%;
+    --popover-foreground: 42 28% 93%;
+    --primary: 190 67% 52%;
+    --primary-foreground: 220 24% 8%;
+    --secondary: 218 17% 16%;
+    --secondary-foreground: 42 22% 90%;
+    --muted: 218 17% 16%;
+    --muted-foreground: 215 15% 67%;
+    --accent: 23 78% 61%;
+    --accent-foreground: 220 24% 8%;
+    --border: 218 16% 23%;
+    --input: 218 16% 25%;
+    --ring: 190 67% 52%;
+    --destructive: 0 62% 52%;
+    --destructive-foreground: 0 0% 100%;
+  }
 }
 
 * {
@@ -32,13 +59,27 @@ html {
 }
 
 body {
-  min-height: 100vh;
+  min-height: 100dvh;
   font-family: var(--font-heading), sans-serif;
   background:
-    radial-gradient(circle at top left, rgba(251, 191, 36, 0.18), transparent 30%),
-    radial-gradient(circle at top right, rgba(14, 116, 144, 0.12), transparent 35%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(247, 243, 233, 0.95));
+    radial-gradient(circle at 8% 0%, hsl(var(--accent) / 0.09), transparent 30rem),
+    radial-gradient(circle at 92% 0%, hsl(var(--primary) / 0.1), transparent 34rem),
+    hsl(var(--background));
   color: hsl(var(--foreground));
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+h1,
+h2,
+h3,
+p {
+  text-wrap: pretty;
 }
 
 code,
@@ -52,7 +93,43 @@ pre {
 
 .grid-surface {
   background-image:
-    linear-gradient(rgba(15, 23, 42, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(15, 23, 42, 0.04) 1px, transparent 1px);
+    linear-gradient(hsl(var(--foreground) / 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--foreground) / 0.04) 1px, transparent 1px);
   background-size: 24px 24px;
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    hsl(var(--muted)) 20%,
+    hsl(var(--card)) 50%,
+    hsl(var(--muted)) 80%
+  );
+  background-size: 240% 100%;
+  animation: skeleton-shimmer 1.8s ease-in-out infinite;
+}
+
+@keyframes skeleton-shimmer {
+  from {
+    background-position: 100% 0;
+  }
+
+  to {
+    background-position: -100% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }

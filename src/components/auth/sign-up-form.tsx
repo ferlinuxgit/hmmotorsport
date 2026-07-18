@@ -6,6 +6,7 @@ import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth/auth-client";
 import { resolveSafeRedirect } from "@/lib/auth/redirects";
 
@@ -50,10 +51,10 @@ export function SignUpForm() {
   }
 
   return (
-    <Card className="border-border/70 shadow-panel">
+    <Card className="border-border/80 bg-card">
       <CardHeader>
-        <CardTitle>Crear cuenta</CardTitle>
-        <CardDescription>Alta nativa sobre Better Auth y la tabla interna de usuarios.</CardDescription>
+        <CardTitle className="text-2xl">Crear cuenta</CardTitle>
+        <CardDescription>Configura tu identidad para acceder a las superficies privadas.</CardDescription>
       </CardHeader>
       <CardContent>
         <form
@@ -62,43 +63,47 @@ export function SignUpForm() {
           }}
           className="space-y-4"
         >
-          <label className="block space-y-2">
+          <label className="block space-y-2" htmlFor="sign-up-name">
             <span className="text-sm font-medium">Nombre</span>
-            <input
+            <Input
+              id="sign-up-name"
               name="name"
               type="text"
               autoComplete="name"
               required
-              className="h-11 w-full rounded-2xl border bg-background px-4 text-sm outline-none transition focus:border-primary"
             />
           </label>
-          <label className="block space-y-2">
+          <label className="block space-y-2" htmlFor="sign-up-email">
             <span className="text-sm font-medium">Email</span>
-            <input
+            <Input
+              id="sign-up-email"
               name="email"
               type="email"
               autoComplete="email"
               required
-              className="h-11 w-full rounded-2xl border bg-background px-4 text-sm outline-none transition focus:border-primary"
             />
           </label>
-          <label className="block space-y-2">
+          <label className="block space-y-2" htmlFor="sign-up-password">
             <span className="text-sm font-medium">Contraseña</span>
-            <input
+            <Input
+              id="sign-up-password"
               name="password"
               type="password"
               autoComplete="new-password"
               required
               minLength={8}
-              className="h-11 w-full rounded-2xl border bg-background px-4 text-sm outline-none transition focus:border-primary"
+              aria-describedby="sign-up-password-help"
             />
+            <span id="sign-up-password-help" className="block text-xs text-muted-foreground">Mínimo 8 caracteres. Evita reutilizar una contraseña existente.</span>
           </label>
-          {error ? <p className="text-sm text-red-700">{error}</p> : null}
-          <div className="flex items-center justify-between gap-4">
-            <Button type="submit" disabled={isPending}>
+          <div aria-live="polite" aria-atomic="true">
+            {error ? <p className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">{error}</p> : null}
+          </div>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <Button className="sm:min-w-32" type="submit" disabled={isPending}>
               {isPending ? "Creando..." : "Crear cuenta"}
             </Button>
-            <Link href="/sign-in" className="text-sm text-muted-foreground transition hover:text-foreground">
+            <Link href="/sign-in" className="rounded text-sm text-muted-foreground transition hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
               Ya tengo cuenta
             </Link>
           </div>

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import { SignUpForm } from "@/components/auth/sign-up-form";
-import { SiteHeader } from "@/components/layout/site-header";
+import { AuthShell } from "@/components/auth/auth-shell";
 import { getCurrentAccount } from "@/lib/auth/server";
 
 export default async function SignUpPage() {
@@ -13,14 +13,9 @@ export default async function SignUpPage() {
   }
 
   return (
-    <div className="min-h-screen">
-      <SiteHeader />
-      <main className="mx-auto flex max-w-lg px-6 py-16">
-        <div className="w-full">
-          <SignUpForm />
-        </div>
-      </main>
-    </div>
+    <AuthShell title="Crea tu punto de partida." description="Registra una cuenta y entra en una foundation preparada para crecer por módulos.">
+      <SignUpForm />
+    </AuthShell>
   );
 }
 export const metadata: Metadata = {

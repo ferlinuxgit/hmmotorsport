@@ -13,7 +13,7 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-[100dvh]">
       <SiteHeader />
       <DashboardShell account={account} />
     </div>
@@ -23,4 +23,3 @@ export const metadata: Metadata = {
   title: "Dashboard",
   robots: { index: false, follow: false }
 };
-

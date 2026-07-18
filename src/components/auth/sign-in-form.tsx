@@ -6,6 +6,7 @@ import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth/auth-client";
 import { resolveSafeRedirect } from "@/lib/auth/redirects";
 
@@ -49,10 +50,10 @@ export function SignInForm() {
   }
 
   return (
-    <Card className="border-border/70 shadow-panel">
+    <Card className="border-border/80 bg-card">
       <CardHeader>
-        <CardTitle>Entrar</CardTitle>
-        <CardDescription>Acceso con email y contraseña gestionado por Better Auth.</CardDescription>
+        <CardTitle className="text-2xl">Entrar</CardTitle>
+        <CardDescription>Usa las credenciales asociadas a tu cuenta.</CardDescription>
       </CardHeader>
       <CardContent>
         <form
@@ -61,32 +62,36 @@ export function SignInForm() {
           }}
           className="space-y-4"
         >
-          <label className="block space-y-2">
+          <label className="block space-y-2" htmlFor="sign-in-email">
             <span className="text-sm font-medium">Email</span>
-            <input
+            <Input
+              id="sign-in-email"
               name="email"
               type="email"
               autoComplete="email"
               required
-              className="h-11 w-full rounded-2xl border bg-background px-4 text-sm outline-none transition focus:border-primary"
+              aria-describedby="sign-in-email-help"
             />
+            <span id="sign-in-email-help" className="block text-xs text-muted-foreground">La dirección utilizada al crear tu cuenta.</span>
           </label>
-          <label className="block space-y-2">
+          <label className="block space-y-2" htmlFor="sign-in-password">
             <span className="text-sm font-medium">Contraseña</span>
-            <input
+            <Input
+              id="sign-in-password"
               name="password"
               type="password"
               autoComplete="current-password"
               required
-              className="h-11 w-full rounded-2xl border bg-background px-4 text-sm outline-none transition focus:border-primary"
             />
           </label>
-          {error ? <p className="text-sm text-red-700">{error}</p> : null}
-          <div className="flex items-center justify-between gap-4">
-            <Button type="submit" disabled={isPending}>
+          <div aria-live="polite" aria-atomic="true">
+            {error ? <p className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">{error}</p> : null}
+          </div>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <Button className="sm:min-w-28" type="submit" disabled={isPending}>
               {isPending ? "Entrando..." : "Entrar"}
             </Button>
-            <Link href="/sign-up" className="text-sm text-muted-foreground transition hover:text-foreground">
+            <Link href="/sign-up" className="rounded text-sm text-muted-foreground transition hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
               Crear cuenta
             </Link>
           </div>

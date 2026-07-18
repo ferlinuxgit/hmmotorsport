@@ -34,6 +34,13 @@ export async function POST(request: Request) {
       userAgent: request.headers.get("user-agent")
     });
   } catch (error) {
+    if (process.env.NODE_ENV !== "production") {
+      logger.warn("Analytics event skipped because local storage is unavailable", { error, requestId });
+      const response = NextResponse.json({ ok: true, stored: false }, { status: 202 });
+      response.headers.set(REQUEST_ID_HEADER, requestId);
+      return response;
+    }
+
     logger.error("Analytics event could not be stored", { error, requestId });
     return NextResponse.json({ error: "Analytics event could not be stored" }, { status: 500 });
   }

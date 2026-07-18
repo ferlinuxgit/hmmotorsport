@@ -1,212 +1,45 @@
 # Roadmap
 
-Plan técnico para llevar este boilerplate desde una base validada hasta una foundation reusable de muy alto nivel.
+## Estado de la foundation
 
-## Estado actual
+La base ya resuelve arquitectura modular, auth, PostgreSQL, pagos, webhooks, analítica propia, rate limiting, observabilidad, despliegue, UI responsive y validación automatizada. El trabajo pendiente depende principalmente del producto que se construya encima.
 
-Hoy la base ya:
+## Prioridad 1: primer dominio real
 
-- instala correctamente
-- compila
-- pasa `lint`
-- pasa `typecheck`
-- soporta Docker y Coolify
-- integra Better Auth
-- integra PostgreSQL interno o externo
-- tiene arquitectura extensible por módulos
+- sustituir enlaces de demostración por recursos y rutas del producto
+- definir ownership y permisos por workspace para esos recursos
+- crear onboarding que produzca el primer resultado útil
+- añadir tests de integración específicos del dominio
 
-## Objetivo
+## Prioridad 2: operación del producto
 
-Llevar la base a un nivel `9.5/10` como boilerplate reusable para múltiples productos sin necesidad de refactors estructurales tempranos.
+- convertir las tablas del backoffice en acciones autorizadas y auditables
+- añadir paginación, filtros y búsqueda cuando el volumen lo justifique
+- configurar alertas y métricas del proveedor de hosting
+- definir política real de retención de analítica y datos de cuenta
 
-## Prioridad 1
+## Prioridad 3: monetización
 
-### 1. Migraciones reales de base de datos
+- modelar planes y derechos de acceso del producto
+- añadir reconciliación periódica además de webhooks
+- implementar cancelaciones, reembolsos e impuestos según mercado
+- probar checkout completo contra entornos sandbox de Stripe y PayPal
 
-Objetivo:
+## Prioridad 4: contenido y marca
 
-- versionar el estado real del schema actual
-- dejar bootstrap reproducible para cualquier entorno
+- sustituir nombre, copy, favicon y Open Graph por la identidad final
+- completar términos y privacidad con revisión legal
+- conectar un CMS solo si el flujo editorial lo necesita
+- medir accesibilidad, Core Web Vitals y conversión con datos reales
 
-Entregables:
+## Garantías que deben mantenerse
 
-- migración inicial Drizzle
-- documentación de bootstrap
-- validación de `db:generate` y `db:migrate`
-
-### 2. Auth avanzada
-
-Objetivo:
-
-- ampliar Better Auth solo si el producto necesita recuperación de contraseña, verificación de email u OAuth
-
-Entregables:
-
-- recuperación de contraseña
-- verificación de email
-- OAuth opcional
-
-### 3. Seeds iniciales
-
-Objetivo:
-
-- acelerar onboarding y entornos de prueba
-
-Entregables:
-
-- seed de workspace inicial
-- seed de páginas o contenido demo
-- seed opcional de productos/precios demo
-
-## Prioridad 2
-
-### 4. RBAC real
-
-Objetivo:
-
-- pasar de `user/admin` simple a permisos más útiles para SaaS y operación interna
-
-Entregables:
-
-- roles por workspace
-- permisos por capacidad
-- helpers de autorización reutilizables
-- guards para server components y APIs
-
-### 5. Onboarding funcional de producto
-
-Objetivo:
-
-- que un usuario nuevo no solo pueda autenticarse, sino arrancar dentro de una app usable
-
-Entregables:
-
-- creación automática o guiada de workspace
-- selección de workspace
-- estado vacío útil para dashboard
-
-### 6. Base de admin más completa
-
-Objetivo:
-
-- convertir `/admin` en una plataforma mínima operativa
-
-Entregables:
-
-- listado paginado de usuarios
-- cambio de roles
-- métricas básicas
-- trazabilidad mínima
-
-## Prioridad 3
-
-### 7. Tests automatizados
-
-Objetivo:
-
-- validar el boilerplate como producto base, no solo como código que compila
-
-Entregables:
-
-- tests unitarios de helpers críticos
-- tests de integración para auth y API
-- tests de payments
-- smoke tests de rutas principales
-
-### 8. CI
-
-Objetivo:
-
-- impedir regresiones estructurales
-
-Entregables:
-
-- workflow de `lint`
-- workflow de `typecheck`
-- workflow de `build`
-- workflow opcional de tests
-
-### 9. Observabilidad base
-
-Objetivo:
-
-- facilitar diagnóstico en staging y producción
-
-Entregables:
-
-- logging estructurado
-- error boundaries
-- captura centralizada de errores
-- healthchecks más ricos
-
-## Prioridad 4
-
-### 10. Commerce real
-
-Objetivo:
-
-- convertir la abstracción de pagos en una base operativa para venta real
-
-Entregables:
-
-- webhooks de Stripe
-- captura/confirmación de PayPal
-- persistencia de órdenes y estados
-- reconciliación básica de pagos
-
-### 11. CMS interno mínimo
-
-Objetivo:
-
-- hacer útil la vertical de marketing sin depender de otro sistema
-
-Entregables:
-
-- CRUD de `content_pages`
-- vista previa
-- publicación/despublicación
-
-### 12. Convenciones de módulos avanzadas
-
-Objetivo:
-
-- hacer que nuevas verticales puedan enchufarse con menos fricción
-
-Entregables:
-
-- contrato de módulo ampliado
-- hooks de servidor por módulo
-- registro de rutas/capacidades
-
-## Checklist de salida a “9.5/10”
-
-- migraciones versionadas listas
-- auth base con Better Auth funcionando
-- seeds reproducibles
-- RBAC por workspace
-- tests mínimos automatizados
-- CI activa
-- flujos de pago más cerrados
-- documentación técnica alineada
-
-## Orden recomendado de ejecución
-
-1. migraciones
-2. auth avanzada si el producto la necesita
-3. seeds
-4. RBAC
-5. onboarding funcional
-6. tests
-7. CI
-8. observabilidad
-9. commerce real
-10. CMS interno
+- `lint`, tipos, tests, build, audit y guard de estilos en verde
+- migraciones y seeds reproducibles
+- una sola familia visual y una sola fuente de tokens
+- rutas, analytics y contratos públicos sin cambios silenciosos
+- lógica de vertical dentro de extensiones antes que dentro del core
 
 ## Criterio de éxito
 
-Se puede considerar esta base cerca de `9.5/10` cuando:
-
-- una persona nueva puede arrancarla sin fricción
-- un producto nuevo puede reutilizar el core sin refactor estructural
-- auth, datos y pagos tienen una base operativa real
-- los cambios importantes quedan protegidos por validación automática
+La siguiente etapa está completa cuando una persona nueva puede crear una cuenta, obtener valor del primer recurso de negocio, pagar si corresponde y ser atendida desde el backoffice sin intervenciones manuales en base de datos.

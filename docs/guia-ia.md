@@ -96,6 +96,9 @@ Para páginas públicas nuevas, exporta metadata específica cuando el título o
 ## UI y Accesibilidad
 
 - Usa los componentes existentes antes de crear patrones nuevos.
+- Sigue [sistema-visual.md](./sistema-visual.md) y consume tokens semánticos; no introduzcas paletas locales.
+- Usa Phosphor para iconografía y no mezcles familias en el mismo producto.
+- Evita grids repetidos de tarjetas cuando divisores, listas o espacio comuniquen mejor la jerarquía.
 - Mantén navegación y CTAs con enlaces semánticos cuando navegan.
 - Usa estados vacíos, loading y errores cuando haya datos remotos.
 - Mantén contraste, foco visible y textos accionables.

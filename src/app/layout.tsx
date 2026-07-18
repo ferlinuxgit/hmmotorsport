@@ -64,6 +64,12 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
   return (
     <html lang="es" suppressHydrationWarning>
       <body className={`${headingFont.variable} ${monoFont.variable} font-sans antialiased`}>
+        <a
+          href="#main-content"
+          className="fixed left-4 top-4 z-[60] -translate-y-24 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition focus:translate-y-0"
+        >
+          Saltar al contenido
+        </a>
         {children}
         <Suspense fallback={null}>
           <AnalyticsTracker />

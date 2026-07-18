@@ -1,8 +1,8 @@
+import { ArrowRight, CheckCircle, Cube, Gear, UserCircle } from "@phosphor-icons/react/dist/ssr";
 import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
 import type { AuthAccount } from "@/lib/auth/server";
 import { getAppNavigation, getDashboardCards, getInstalledModules } from "@/lib/modules/loader";
 
@@ -12,103 +12,110 @@ export function DashboardShell({ account }: { account: AuthAccount }) {
   const modules = getInstalledModules();
 
   return (
-    <div className="mx-auto grid max-w-7xl gap-8 px-6 py-12 lg:grid-cols-[280px_1fr]">
-      <aside className="space-y-6">
-        <div className="space-y-3">
-          <Badge variant="secondary">Workspace shell</Badge>
-          <h1 className="text-3xl font-semibold tracking-[-0.03em]">Dashboard extensible</h1>
-          <p className="text-sm leading-6 text-muted-foreground">
-            La navegación y las vistas base consumen definiciones de módulo. El core no necesita cambios para sumar nuevas áreas.
-          </p>
-          <div className="rounded-2xl bg-secondary p-4">
-            <p className="text-sm font-medium">{account.name}</p>
-            <p className="text-sm text-muted-foreground">{account.email}</p>
-            <p className="mt-2 text-xs uppercase tracking-[0.22em] text-primary">{account.role}</p>
+    <main id="main-content" className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14">
+      <header className="grid gap-6 border-b border-border/80 pb-10 lg:grid-cols-[1fr_auto] lg:items-end">
+        <div>
+          <p className="font-mono text-xs font-medium uppercase tracking-[0.14em] text-primary">Workspace</p>
+          <h1 className="mt-4 text-4xl font-semibold tracking-[-0.04em] sm:text-5xl">Dashboard extensible</h1>
+          <p className="mt-4 max-w-2xl leading-7 text-muted-foreground">Navegación, capacidades y acciones se proyectan desde los módulos instalados sin introducir lógica de vertical en el core.</p>
+        </div>
+        <div className="flex items-center gap-3 rounded-xl border border-border/80 bg-card px-4 py-3">
+          <div className="flex size-10 items-center justify-center rounded-lg bg-secondary text-primary">
+            <UserCircle size={22} weight="duotone" aria-hidden="true" />
           </div>
+          <div className="min-w-0">
+            <p className="truncate text-sm font-semibold">{account.name}</p>
+            <p className="truncate text-xs text-muted-foreground">{account.email}</p>
+          </div>
+          <Badge variant={account.role === "admin" ? "default" : "secondary"}>{account.role}</Badge>
         </div>
-        <Separator />
-        <nav className="grid gap-2">
-          {navigation.map((item) => (
-            <Link
-              key={`${item.href}-${item.title}`}
-              href={item.href}
-              className="rounded-2xl border border-transparent px-4 py-3 text-sm transition hover:border-border hover:bg-background/70"
-            >
-              <p className="font-medium">{item.title}</p>
-              <p className="mt-1 text-muted-foreground">{item.description}</p>
-            </Link>
-          ))}
-          <Link
-            href="/account"
-            className="rounded-2xl border border-transparent px-4 py-3 text-sm transition hover:border-border hover:bg-background/70"
-          >
-            <p className="font-medium">Cuenta</p>
-            <p className="mt-1 text-muted-foreground">Perfil, sesiones y ajustes de usuario</p>
+      </header>
+
+      <nav aria-label="Áreas del producto" className="flex gap-2 overflow-x-auto border-b border-border/80 py-4">
+        {navigation.map((item) => (
+          <Link key={`${item.href}-${item.title}`} href={item.href} className="shrink-0 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition hover:bg-secondary hover:text-foreground">
+            {item.title}
           </Link>
-          {account.role === "admin" ? (
-            <Link
-              href="/admin"
-              className="rounded-2xl border border-transparent px-4 py-3 text-sm transition hover:border-border hover:bg-background/70"
-            >
-              <p className="font-medium">Admin</p>
-              <p className="mt-1 text-muted-foreground">Usuarios, roles y supervisión del sistema</p>
-            </Link>
-          ) : null}
-        </nav>
-      </aside>
+        ))}
+        <Link href="/account" className="shrink-0 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition hover:bg-secondary hover:text-foreground">Cuenta</Link>
+        {account.role === "admin" ? <Link href="/admin" className="shrink-0 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition hover:bg-secondary hover:text-foreground">Backoffice</Link> : null}
+      </nav>
 
-      <section className="space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Cuenta activa</CardTitle>
-            <CardDescription>El dashboard ya conoce el usuario autenticado y su rol operativo.</CardDescription>
-          </CardHeader>
-          <CardContent className="grid gap-3 md:grid-cols-3">
+      <div className="grid gap-12 py-12 lg:grid-cols-[1.2fr_0.8fr]">
+        <section aria-labelledby="modules-title">
+          <div className="flex items-end justify-between gap-4">
             <div>
-              <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground">Cuenta</p>
-              <p className="mt-2 text-sm font-medium">{account.name}</p>
+              <h2 id="modules-title" className="text-2xl font-semibold tracking-[-0.025em]">Capacidades instaladas</h2>
+              <p className="mt-2 text-sm text-muted-foreground">Estado real del registro generado durante el build.</p>
             </div>
-            <div>
-              <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground">Email</p>
-              <p className="mt-2 text-sm font-medium">{account.email}</p>
-            </div>
-            <div>
-              <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground">Rol</p>
-              <p className="mt-2 text-sm font-medium capitalize">{account.role}</p>
-            </div>
-          </CardContent>
-        </Card>
+            <span className="font-mono text-sm text-muted-foreground">{modules.length} activas</span>
+          </div>
 
-        <div className="grid gap-4 md:grid-cols-3">
-          {modules.map((module) => (
-            <Card key={module.key}>
-              <CardHeader>
-                <CardTitle>{module.name}</CardTitle>
-                <CardDescription>{module.description}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">{module.dbTables.join(", ")}</p>
-              </CardContent>
-            </Card>
-          ))}
+          <div className="mt-8 border-t border-border/80">
+            {modules.length === 0 ? (
+              <div className="border-b border-border/80 py-10 text-center">
+                <Cube size={30} className="mx-auto text-muted-foreground" aria-hidden="true" />
+                <p className="mt-4 font-medium">No hay módulos instalados.</p>
+                <p className="mt-2 text-sm text-muted-foreground">Añade una definición en src/extensions y ejecuta modules:sync.</p>
+              </div>
+            ) : (
+              modules.map((module) => (
+                <article key={module.key} className="grid gap-4 border-b border-border/80 py-6 sm:grid-cols-[1fr_auto] sm:items-center">
+                  <div>
+                    <div className="flex items-center gap-3">
+                      <h3 className="font-semibold">{module.name}</h3>
+                      <Badge variant="secondary">{module.area}</Badge>
+                    </div>
+                    <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">{module.description}</p>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <CheckCircle size={17} weight="fill" className="text-primary" aria-hidden="true" />
+                    {module.dbTables.length} tablas
+                  </div>
+                </article>
+              ))
+            )}
+          </div>
+        </section>
+
+        <aside className="rounded-2xl bg-secondary p-6 sm:p-8" aria-labelledby="next-title">
+          <Gear size={26} weight="duotone" className="text-primary" aria-hidden="true" />
+          <h2 id="next-title" className="mt-5 text-2xl font-semibold tracking-[-0.025em]">Convierte la base en producto</h2>
+          <p className="mt-3 text-sm leading-6 text-muted-foreground">Los módulos actuales demuestran el contrato. El siguiente paso es reemplazar sus rutas de ejemplo por recursos del dominio real.</p>
+          <ol className="mt-7 space-y-4 text-sm">
+            {["Define el primer recurso de negocio", "Asigna permisos por workspace", "Conecta un flujo completo a su API"].map((item, index) => (
+              <li key={item} className="grid grid-cols-[28px_1fr] items-start gap-3">
+                <span className="flex size-7 items-center justify-center rounded-md bg-background font-mono text-xs">{index + 1}</span>
+                <span className="pt-1">{item}</span>
+              </li>
+            ))}
+          </ol>
+        </aside>
+      </div>
+
+      <section aria-labelledby="actions-title" className="border-t border-border/80 pt-10">
+        <div className="max-w-2xl">
+          <h2 id="actions-title" className="text-2xl font-semibold tracking-[-0.025em]">Puntos de entrada</h2>
+          <p className="mt-2 text-sm text-muted-foreground">Acciones declaradas por las extensiones para continuar el desarrollo.</p>
         </div>
-
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {cards.map((card) => (
-            <Card key={card.key}>
-              <CardHeader>
-                <CardTitle>{card.title}</CardTitle>
-                <CardDescription>{card.description}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Link href={card.href} className="text-sm font-medium text-primary">
-                  Abrir flujo
-                </Link>
-              </CardContent>
-            </Card>
-          ))}
+        <div className="mt-8 grid gap-4 md:grid-cols-2">
+          {cards.length === 0 ? (
+            <p className="rounded-xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground md:col-span-2">No hay acciones registradas.</p>
+          ) : (
+            cards.map((card) => (
+              <article key={card.key} className="flex min-h-44 flex-col justify-between rounded-2xl border border-border/80 bg-card p-6">
+                <div>
+                  <h3 className="text-lg font-semibold">{card.title}</h3>
+                  <p className="mt-2 max-w-[48ch] text-sm leading-6 text-muted-foreground">{card.description}</p>
+                </div>
+                <Button className="mt-6 w-fit" variant="outline" size="sm" asChild>
+                  <Link href={card.href}>Abrir flujo <ArrowRight size={16} weight="bold" aria-hidden="true" /></Link>
+                </Button>
+              </article>
+            ))
+          )}
         </div>
       </section>
-    </div>
+    </main>
   );
 }

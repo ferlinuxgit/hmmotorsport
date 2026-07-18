@@ -2,14 +2,12 @@ import Link from "next/link";
 
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { Button } from "@/components/ui/button";
-import { getCurrentAccount } from "@/lib/auth/server";
+import type { AuthAccount } from "@/lib/auth/server";
 
-export async function HeaderAuth() {
-  const account = await getCurrentAccount();
-
+export function HeaderAuth({ account }: { account: AuthAccount | null }) {
   if (!account) {
     return (
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2">
         <Button variant="ghost" asChild>
           <Link href="/sign-in">Entrar</Link>
         </Button>
@@ -21,7 +19,7 @@ export async function HeaderAuth() {
   }
 
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-1">
       <Button variant="ghost" asChild>
         <Link href="/dashboard">Dashboard</Link>
       </Button>
@@ -33,7 +31,7 @@ export async function HeaderAuth() {
           <Link href="/admin">Admin</Link>
         </Button>
       ) : null}
-      <SignOutButton />
+      <SignOutButton className="ml-1" />
     </div>
   );
 }

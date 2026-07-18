@@ -8,6 +8,7 @@
     "dev": "next dev",
     "prebuild": "node scripts/sync-modules.mjs",
     "build": "next build",
+    "postbuild": "node scripts/check-built-styles.mjs",
     "start": "next start",
     "start:docker": "node scripts/sync-modules.mjs && next start -H 0.0.0.0 -p 3000",
     "audit": "npm audit --omit=dev",
@@ -25,13 +26,13 @@
     "modules:sync": "node scripts/sync-modules.mjs"
   },
   "dependencies": {
+    "@phosphor-icons/react": "^2.1.10",
     "@radix-ui/react-separator": "1.1.11",
     "@radix-ui/react-slot": "1.3.0",
     "better-auth": "1.6.23",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
     "drizzle-orm": "0.45.2",
-    "lucide-react": "1.23.0",
     "next": "16.2.10",
     "postgres": "3.4.9",
     "react": "19.2.7",

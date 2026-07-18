@@ -10,7 +10,7 @@ function normalizePublicPath(href: string) {
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const siteUrl = getSiteUrl();
-  const publicPaths = new Set(["/", ...getSiteNavigation().map((item) => normalizePublicPath(item.href))]);
+  const publicPaths = new Set(["/", "/privacy", "/terms", ...getSiteNavigation().map((item) => normalizePublicPath(item.href))]);
   const now = new Date();
 
   return [...publicPaths].map((path) => ({
