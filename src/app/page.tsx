@@ -1,192 +1,107 @@
-import {
-  ArrowRight,
-  BracketsCurly,
-  ChartLineUp,
-  CheckCircle,
-  Database,
-  Fingerprint,
-  Package,
-  Pulse,
-  ShieldCheck
-} from "@phosphor-icons/react/dist/ssr";
+import { ArrowDown, ArrowRight, Check, Gauge, Wrench } from "@phosphor-icons/react/dist/ssr";
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 
-import { Hero } from "@/components/marketing/hero";
+import { ContactBand } from "@/components/hm/contact-band";
+import { SectionHeading } from "@/components/hm/section-heading";
+import { ServiceList } from "@/components/hm/service-list";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
-import { Button } from "@/components/ui/button";
-import { getInstalledModules, getMarketingSections } from "@/lib/modules/loader";
-import { cn } from "@/lib/utils";
 
-const foundations = [
-  {
-    title: "Frontend componible",
-    description: "App Router, Server Components y una capa visual pequeña que se puede sustituir sin tocar dominio.",
-    icon: BracketsCurly
-  },
-  {
-    title: "Datos reproducibles",
-    description: "PostgreSQL y Drizzle con migraciones versionadas, seeds y soporte para infraestructura interna o gestionada.",
-    icon: Database
-  },
-  {
-    title: "Identidad operativa",
-    description: "Better Auth, sesiones, cuentas activas, roles administrativos y una ruta clara hacia permisos por workspace.",
-    icon: Fingerprint
-  },
-  {
-    title: "Pagos desacoplados",
-    description: "Órdenes internas, Stripe, PayPal y webhooks idempotentes sin confiar en importes enviados por el cliente.",
-    icon: ShieldCheck
-  }
-];
-
-const operationalSignals = [
-  ["/api/live", "Proceso disponible"],
-  ["/api/ready", "Configuración y dependencias"],
-  ["/api/health", "Estado agregado del sistema"]
+const workBases = [
+  ["01", "Revisión inicial", "Objetivo, configuración y estado real del coche."],
+  ["02", "Prioridades", "Un plan por fases para no gastar donde no aporta."],
+  ["03", "Ejecución limpia", "Montajes accesibles, ordenados y fáciles de mantener."],
+  ["04", "Validación", "Resultados medibles, temperaturas controladas y consistencia."]
 ] as const;
 
 export default function HomePage() {
-  const modules = getInstalledModules();
-  const sections = getMarketingSections();
-
   return (
-    <div className="min-h-[100dvh] overflow-x-hidden">
+    <div className="min-h-[100dvh] overflow-x-hidden bg-background">
       <SiteHeader />
       <main id="main-content">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <Hero />
-
-          <section id="stack" className="py-24 lg:py-32">
-            <div className="max-w-3xl">
-              <h2 className="text-3xl font-semibold tracking-[-0.035em] sm:text-4xl">Un núcleo pequeño para problemas transversales.</h2>
-              <p className="mt-5 max-w-[65ch] text-base leading-7 text-muted-foreground">
-                La base resuelve infraestructura compartida. El dominio específico permanece en extensiones que se pueden añadir, retirar y probar de forma aislada.
-              </p>
-            </div>
-
-            <div className="mt-12 grid border-t border-border/80 md:grid-cols-2">
-              {foundations.map(({ title, description, icon: Icon }, index) => (
-                <article
-                  key={title}
-                  className={cn(
-                    "grid grid-cols-[auto_1fr] gap-5 border-b border-border/80 py-7 md:px-7",
-                    index % 2 === 0 ? "md:border-r md:pl-0" : "md:pr-0"
-                  )}
-                >
-                  <div className="flex size-10 items-center justify-center rounded-lg bg-secondary text-primary">
-                    <Icon size={21} weight="duotone" aria-hidden="true" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold">{title}</h3>
-                    <p className="mt-2 max-w-[52ch] text-sm leading-6 text-muted-foreground">{description}</p>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </section>
-
-          <section id="modules" className="py-20 lg:py-28">
-            <div className="max-w-3xl">
-              <p className="font-mono text-xs font-medium uppercase tracking-[0.14em] text-primary">Extensiones instaladas</p>
-              <h2 className="mt-4 text-3xl font-semibold tracking-[-0.035em] sm:text-4xl">Tres verticales, un mismo contrato.</h2>
-              <p className="mt-5 max-w-[65ch] leading-7 text-muted-foreground">
-                Navegación, contenido de marketing, superficies privadas, tablas y providers se registran desde cada módulo.
-              </p>
-            </div>
-
-            <div className="mt-12 grid gap-4 lg:grid-cols-12">
-              {modules.map((module, index) => (
-                <article
-                  key={module.key}
-                  className={cn(
-                    "rounded-2xl border border-border/80 p-6 sm:p-8",
-                    index === 0 && "bg-primary text-primary-foreground lg:col-span-7",
-                    index === 1 && "bg-card lg:col-span-5",
-                    index === 2 && "grid gap-8 bg-secondary lg:col-span-12 lg:grid-cols-[1fr_auto] lg:items-end"
-                  )}
-                >
-                  <div>
-                    <div className="mb-10 flex items-center justify-between gap-4">
-                      <span className="font-mono text-xs uppercase tracking-[0.12em] opacity-70">{module.area}</span>
-                      <Package size={22} weight="duotone" aria-hidden="true" />
-                    </div>
-                    <h3 className="text-2xl font-semibold tracking-[-0.025em]">{module.name}</h3>
-                    <p className={cn("mt-3 max-w-xl text-sm leading-6", index === 0 ? "text-primary-foreground/75" : "text-muted-foreground")}>{module.description}</p>
-                  </div>
-                  <div className="mt-8 flex flex-wrap gap-2 lg:mt-0">
-                    {module.dbTables.map((table) => (
-                      <code key={table} className={cn("rounded-md px-2.5 py-1.5 text-xs", index === 0 ? "bg-primary-foreground/10" : "bg-background/80")}>{table}</code>
-                    ))}
-                  </div>
-                </article>
-              ))}
-            </div>
-          </section>
-
-          <section className="py-20 lg:py-28">
-            <div className="grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
-              <div className="lg:sticky lg:top-28">
-                <Pulse size={30} weight="duotone" className="text-primary" aria-hidden="true" />
-                <h2 className="mt-6 text-3xl font-semibold tracking-[-0.035em] sm:text-4xl">Operación visible desde el primer despliegue.</h2>
-                <p className="mt-5 max-w-[55ch] leading-7 text-muted-foreground">
-                  La app expone señales útiles para contenedores, balanceadores y operación interna sin mezclar ese código con las páginas de producto.
-                </p>
-              </div>
-
-              <div className="border-t border-border/80">
-                {operationalSignals.map(([path, label]) => (
-                  <div key={path} className="grid gap-3 border-b border-border/80 py-6 sm:grid-cols-[180px_1fr_auto] sm:items-center">
-                    <code className="text-sm text-primary">{path}</code>
-                    <p className="text-sm text-muted-foreground">{label}</p>
-                    <CheckCircle size={18} weight="fill" className="text-primary" aria-label="Disponible" />
-                  </div>
-                ))}
-                <div className="mt-8 grid gap-4 rounded-2xl bg-card p-6 sm:grid-cols-2">
-                  <div>
-                    <ChartLineUp size={22} className="text-primary" aria-hidden="true" />
-                    <h3 className="mt-4 font-semibold">Analítica propia</h3>
-                    <p className="mt-2 text-sm leading-6 text-muted-foreground">Page views y eventos operativos sin almacenar IP por defecto.</p>
-                  </div>
-                  <div>
-                    <ShieldCheck size={22} className="text-primary" aria-hidden="true" />
-                    <h3 className="mt-4 font-semibold">Límites distribuidos</h3>
-                    <p className="mt-2 text-sm leading-6 text-muted-foreground">Protección para auth, checkout, analítica y administración.</p>
-                  </div>
+        <section className="relative isolate min-h-[calc(100dvh-76px)] overflow-hidden border-b border-border lg:min-h-[calc(100dvh-118px)]">
+          <Image src="/images/hm/hero-workshop.jpg" alt="Motor preparado por HM Motorsport" fill priority sizes="100vw" className="-z-20 object-cover object-center" />
+          <div className="absolute inset-0 -z-10 bg-black/60" />
+          <div className="hm-grid absolute inset-0 -z-10 opacity-30" />
+          <div className="mx-auto flex min-h-[calc(100dvh-76px)] max-w-[1440px] flex-col justify-between px-4 py-10 sm:px-6 sm:py-14 lg:min-h-[calc(100dvh-118px)] lg:px-10 lg:py-16">
+            <div className="grid gap-10 lg:grid-cols-[1fr_320px] lg:items-start">
+              <div>
+                <p className="inline-flex items-center gap-3 font-mono text-[11px] font-medium uppercase tracking-[0.24em] text-white/70"><span className="h-px w-10 bg-primary" /> Street · Track · Competición</p>
+                <h1 className="mt-7 max-w-6xl text-[clamp(3.65rem,9vw,8.5rem)] font-semibold uppercase leading-[0.78] tracking-[-0.055em] text-white text-balance">
+                  Electrónica<br />y mecánica <span className="text-primary">de alto rendimiento.</span>
+                </h1>
+                <p className="mt-8 max-w-[58ch] text-base leading-7 text-white/72 sm:text-lg">Cada proyecto se plantea según el coche, su uso y el objetivo real. Sin recetas universales. Sin piezas porque sí.</p>
+                <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                  <Link href="/contacto" className="inline-flex h-12 items-center justify-center gap-3 bg-primary px-6 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white active:translate-y-0">Solicitar asesoramiento <ArrowRight size={18} weight="bold" aria-hidden="true" /></Link>
+                  <Link href="#servicios" className="inline-flex h-12 items-center justify-center gap-3 border border-white/30 bg-black/20 px-6 text-sm font-semibold text-white backdrop-blur-sm transition hover:border-white/55 hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white">Ver servicios <ArrowDown size={18} weight="bold" aria-hidden="true" /></Link>
                 </div>
               </div>
-            </div>
-          </section>
 
-          <section className="py-20 lg:py-28">
-            <div className="max-w-3xl">
-              <h2 className="text-3xl font-semibold tracking-[-0.035em] sm:text-4xl">El contenido también se registra por módulo.</h2>
-              <p className="mt-5 max-w-[65ch] leading-7 text-muted-foreground">
-                Estas capacidades llegan al sitio público sin añadir condicionales por vertical dentro del core.
-              </p>
+              <aside className="hidden border-l border-white/20 pl-7 lg:block">
+                <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/45">Nuestra forma de trabajar</p>
+                <p className="mt-5 text-2xl font-semibold uppercase leading-tight text-white">Más potencia no siempre significa ir más rápido.</p>
+                <p className="mt-4 text-sm leading-6 text-white/60">La diferencia está en controlar temperaturas, entregar el par donde sirve y repetir el resultado.</p>
+              </aside>
             </div>
-            <div className="mt-12 border-t border-border/80">
-              {sections.map((section, index) => (
-                <article key={section.key} className="grid gap-4 border-b border-border/80 py-7 md:grid-cols-[80px_1fr_1fr] md:gap-8">
-                  <span className="font-mono text-xs text-muted-foreground">0{index + 1}</span>
-                  <h3 className="text-lg font-semibold">{section.title}</h3>
-                  <p className="max-w-[55ch] text-sm leading-6 text-muted-foreground">{section.description}</p>
-                </article>
+
+            <div className="mt-14 grid border-y border-white/18 sm:grid-cols-3">
+              {["Mecánica deportiva", "Electrónica y datos", "Asistencia en pista"].map((item, index) => (
+                <div key={item} className={`flex items-center gap-3 py-4 text-xs font-medium uppercase tracking-[0.1em] text-white/72 ${index > 0 ? "border-t border-white/18 sm:border-l sm:border-t-0 sm:px-6" : "sm:pr-6"}`}>
+                  <Check size={16} className="shrink-0 text-primary" weight="bold" aria-hidden="true" />{item}
+                </div>
               ))}
             </div>
-          </section>
+          </div>
+        </section>
 
-          <section className="grid-surface my-20 rounded-3xl border border-border/80 bg-card/80 px-6 py-14 text-center sm:px-10 sm:py-20">
-            <h2 className="mx-auto max-w-3xl text-3xl font-semibold tracking-[-0.035em] sm:text-5xl">Empieza con una base que ya explica cómo crecer.</h2>
-            <p className="mx-auto mt-5 max-w-xl leading-7 text-muted-foreground">Crea una cuenta, revisa las superficies privadas y sustituye los módulos de ejemplo por tu dominio real.</p>
-            <div className="mt-8 flex flex-wrap justify-center gap-3">
-              <Button size="lg" asChild><Link href="/sign-up">Crear cuenta <ArrowRight size={18} weight="bold" aria-hidden="true" /></Link></Button>
-              <Button size="lg" variant="outline" asChild><Link href="/dashboard">Ver dashboard</Link></Button>
+        <section id="servicios" className="mx-auto max-w-[1440px] px-4 py-24 sm:px-6 lg:px-10 lg:py-36">
+          <div className="grid gap-10 lg:grid-cols-[1fr_0.7fr] lg:items-end">
+            <SectionHeading eyebrow="Capacidades del taller" title="Servicios con una misma lógica: rendimiento que aguanta." />
+            <p className="max-w-[58ch] text-base leading-7 text-muted-foreground lg:justify-self-end">Desde la arquitectura eléctrica hasta la mecánica y la validación en pista. Todo se plantea como parte del mismo sistema.</p>
+          </div>
+          <div className="mt-14 lg:mt-20"><ServiceList compact /></div>
+        </section>
+
+        <section className="border-y border-border bg-card">
+          <div className="mx-auto grid max-w-[1440px] lg:grid-cols-[0.92fr_1.08fr]">
+            <div className="relative min-h-[420px] overflow-hidden lg:min-h-[720px]">
+              <Image src="/images/hm/asistencia-pista.jpg" alt="Asistencia técnica de HM Motorsport en circuito" fill sizes="(max-width: 1024px) 100vw, 46vw" className="object-cover" />
+              <div className="absolute inset-0 bg-black/20" />
+              <div className="absolute bottom-5 left-5 bg-black/80 px-4 py-3 font-mono text-[10px] uppercase tracking-[0.18em] text-white backdrop-blur sm:bottom-8 sm:left-8">Pista · diagnóstico · consistencia</div>
             </div>
-          </section>
-        </div>
+            <div className="flex flex-col justify-center px-4 py-16 sm:px-8 lg:px-16 lg:py-24">
+              <SectionHeading eyebrow="Método HM" title="Una preparación seria empieza por la base." />
+              <p className="mt-6 max-w-[60ch] text-base leading-7 text-muted-foreground">La experiencia sirve para saber dónde mirar primero. Revisamos, priorizamos y validamos antes de dar por terminado cualquier trabajo.</p>
+              <div className="mt-10 border-t border-border">
+                {workBases.map(([number, title, text]) => (
+                  <div key={number} className="grid grid-cols-[44px_1fr] gap-4 border-b border-border py-5 sm:grid-cols-[58px_170px_1fr] sm:gap-5">
+                    <span className="font-mono text-xs text-primary">{number}</span>
+                    <h3 className="text-lg font-semibold uppercase leading-none">{title}</h3>
+                    <p className="col-start-2 text-sm leading-6 text-muted-foreground sm:col-start-auto">{text}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="mx-auto grid max-w-[1440px] gap-12 px-4 py-24 sm:px-6 lg:grid-cols-[0.75fr_1.25fr] lg:px-10 lg:py-36">
+          <div>
+            <div className="flex size-12 items-center justify-center border border-primary/40 text-primary"><Gauge size={25} weight="duotone" aria-hidden="true" /></div>
+            <h2 className="mt-7 text-4xl font-semibold uppercase leading-[0.95] tracking-[-0.035em] sm:text-5xl">El número de banco es solo una parte.</h2>
+          </div>
+          <div className="lg:pt-20">
+            <p className="max-w-[62ch] text-xl leading-8 text-foreground/85">Un coche eficaz mantiene temperaturas, responde de forma predecible y permite al conductor usar lo que tiene durante más de una vuelta.</p>
+            <div className="mt-10 grid gap-px bg-border sm:grid-cols-2">
+              <div className="bg-background p-6"><Wrench size={22} className="text-primary" weight="duotone" aria-hidden="true" /><h3 className="mt-5 text-xl font-semibold uppercase">Mantenible</h3><p className="mt-3 text-sm leading-6 text-muted-foreground">Acceso, orden y documentación para que cada revisión sea más rápida.</p></div>
+              <div className="bg-background p-6"><Gauge size={22} className="text-primary" weight="duotone" aria-hidden="true" /><h3 className="mt-5 text-xl font-semibold uppercase">Medible</h3><p className="mt-3 text-sm leading-6 text-muted-foreground">Decisiones basadas en señales, temperaturas y comportamiento bajo carga.</p></div>
+            </div>
+          </div>
+        </section>
+
+        <ContactBand />
       </main>
       <SiteFooter />
     </div>
@@ -194,5 +109,7 @@ export default function HomePage() {
 }
 
 export const metadata: Metadata = {
+  title: "HM Motorsport | Electrónica y mecánica de alto rendimiento",
+  description: "Preparación de vehículos, calibración ECU, cableado motorsport, banco de potencia, fabricación y asistencia en pista en Albatera, Alicante.",
   alternates: { canonical: "/" }
 };

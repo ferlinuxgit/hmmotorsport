@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Mono, Manrope } from "next/font/google";
+import { Barlow_Condensed, IBM_Plex_Mono, Manrope } from "next/font/google";
 import { Suspense, type ReactNode } from "react";
 
 import "@/app/globals.css";
@@ -7,9 +7,15 @@ import { AnalyticsTracker } from "@/components/analytics/analytics-tracker";
 import { NavigationProgressProvider, NavigationProgressRouteObserver } from "@/components/navigation/navigation-progress";
 import { getSiteUrl, siteConfig } from "@/lib/config/site";
 
-const headingFont = Manrope({
+const bodyFont = Manrope({
   subsets: ["latin"],
-  variable: "--font-heading"
+  variable: "--font-body"
+});
+
+const displayFont = Barlow_Condensed({
+  subsets: ["latin"],
+  variable: "--font-display",
+  weight: ["500", "600", "700"]
 });
 
 const monoFont = IBM_Plex_Mono({
@@ -64,7 +70,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <html lang="es" suppressHydrationWarning data-scroll-behavior="smooth">
-      <body className={`${headingFont.variable} ${monoFont.variable} font-sans antialiased`}>
+      <body className={`${bodyFont.variable} ${displayFont.variable} ${monoFont.variable} font-sans antialiased`}>
         <a
           href="#main-content"
           className="fixed left-4 top-4 z-[60] -translate-y-24 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition focus:translate-y-0"

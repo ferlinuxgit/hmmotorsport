@@ -1,27 +1,18 @@
-# HM Motorsport — contenido legítimo exportado
+# HM Motorsport — contenido editorial depurado
 
-Origen: https://hmmotorsport.es/
+Esta carpeta conserva únicamente el contenido real utilizado para construir la web de HM Motorsport en este repositorio.
 
-## Páginas
+## Documentos conservados
 
-- [HM Motorsport](home.md) — `https://hmmotorsport.es/` — HTTP 200
-- [Quienes somos – HM Motorsport](quienes-somos.md) — `https://hmmotorsport.es/quienes-somos/` — HTTP 200
-- [Contacto – HM Motorsport](contacto.md) — `https://hmmotorsport.es/contacto/` — HTTP 200
-- [Tienda – HM Motorsport](tienda.md) — `https://hmmotorsport.es/tienda/` — HTTP 200
-- [Cableado Motorsport – HM Motorsport](cableado-motorsport.md) — `https://hmmotorsport.es/cableado/` — HTTP 200
-- [Calibración ECU & Puesta a punto – HM Motorsport](calibracion-ecu-puesta-a-punto.md) — `https://hmmotorsport.es/eco-puesta-punto/` — HTTP 200
-- [Mi cuenta – HM Motorsport](mi-cuenta.md) — `https://hmmotorsport.es/mi-cuenta/` — HTTP 200
-- [Carrito – HM Motorsport](carrito.md) — `https://hmmotorsport.es/carrito/` — HTTP 200
-- [Carrito – HM Motorsport](finalizar-compra.md) — `https://hmmotorsport.es/finalizar-compra/` — HTTP 200
-- [Página de ejemplo – HM Motorsport](pagina-ejemplo.md) — `https://hmmotorsport.es/pagina-ejemplo/` — HTTP 200
+- `home.md`: propuesta principal, servicios y método de trabajo.
+- `quienes-somos.md`: enfoque, valores y proceso.
+- `contacto.md`: canales de contacto y datos del taller.
+- `cableado-motorsport.md`: contenido del servicio de cableado a medida.
+- `calibracion-ecu-puesta-a-punto.md`: contenido del servicio de calibración ECU.
+- `manifest.json`: inventario del contenido curado y sus rutas dentro de la app.
 
-## Carpetas
+## Contenido retirado
 
-- `assets/images/`: imágenes descargadas
-- `assets/styles/`: estilos inline por página y CSS externos descargados
-- `raw-html/`: HTML original de cada página antes de limpieza
-- `manifest.json`: inventario técnico
+Se eliminaron las páginas vacías o ajenas al proyecto: tienda, carrito, finalizar compra, cuenta de usuario y página de ejemplo. También se retiraron el HTML crudo, los estilos de WordPress/Elementor/WooCommerce, tokens temporales y contenido SEO de casino.
 
-## Nota de limpieza
-
-Se han excluido de los Markdown los bloques ocultos de spam SEO/enlaces casino detectados fuera de pantalla. El HTML original se conserva en `raw-html/` para auditoría.
+Las imágenes finales de la aplicación viven en `public/images/hm/`.

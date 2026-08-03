@@ -13,7 +13,7 @@ const compiledCss = (
   await Promise.all(cssFiles.map((entry) => readFile(join(chunksDirectory, entry.name), "utf8")))
 ).join("\n");
 
-const requiredUtilities = [".max-w-7xl", ".px-6", ".bg-primary", ".sm\\:text-5xl", ".lg\\:grid-cols-12"];
+const requiredUtilities = [".max-w-7xl", ".px-6", ".bg-primary", ".sm\\:text-5xl", ".lg\\:grid-cols-5"];
 const missingUtilities = requiredUtilities.filter((utility) => !compiledCss.includes(utility));
 
 if (missingUtilities.length > 0) {

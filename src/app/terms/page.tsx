@@ -3,28 +3,28 @@ import type { Metadata } from "next";
 import { LegalPage, LegalSection } from "@/components/layout/legal-page";
 
 export const metadata: Metadata = {
-  title: "Términos",
-  description: "Términos de uso de la instalación de referencia.",
+  title: "Aviso legal",
+  description: "Condiciones generales de uso del sitio web de HM Motorsport.",
   alternates: { canonical: "/terms" }
 };
 
 export default function TermsPage() {
   return (
     <LegalPage
-      title="Términos de uso"
-      intro="Estos términos describen únicamente el comportamiento base del software. Deben sustituirse por condiciones revisadas para el producto, entidad y mercado donde se publique."
+      title="Aviso legal"
+      intro="Este sitio presenta los servicios y canales de contacto de HM Motorsport. La información publicada tiene carácter general y no sustituye una valoración técnica del vehículo."
     >
-      <LegalSection title="Uso de la cuenta">
-        <p>La persona usuaria debe mantener sus credenciales protegidas y utilizar la aplicación de forma lícita. Las cuentas desactivadas no pueden crear nuevas sesiones.</p>
+      <LegalSection title="Contenido técnico">
+        <p>Las recomendaciones, plazos y resultados dependen del estado del coche, el hardware instalado, el combustible y el uso previsto. Cada trabajo se concreta después de revisar el proyecto.</p>
       </LegalSection>
-      <LegalSection title="Disponibilidad">
-        <p>La base incorpora señales de salud y readiness, pero no promete un nivel de servicio concreto. El producto final debe declarar soporte, disponibilidad y mantenimiento aplicables.</p>
+      <LegalSection title="Presupuestos">
+        <p>Una conversación o formulario inicial no constituye un presupuesto vinculante. El alcance y el importe se confirman cuando existe información suficiente para valorar el trabajo.</p>
       </LegalSection>
-      <LegalSection title="Pagos y reembolsos">
-        <p>Los precios se resuelven en el servidor y los cobros se procesan mediante proveedores externos. El producto final debe documentar impuestos, renovaciones, cancelaciones y reembolsos.</p>
+      <LegalSection title="Propiedad del contenido">
+        <p>Los textos, fotografías, logotipo y elementos de identidad de este sitio pertenecen a sus respectivos titulares y no pueden reutilizarse sin autorización.</p>
       </LegalSection>
       <LegalSection title="Cambios y contacto">
-        <p>La entidad operadora debe publicar una fecha de vigencia, un historial de cambios materiales y un canal verificable para consultas legales.</p>
+        <p>Para consultas relacionadas con el sitio o sus contenidos, escribe a contacto@hmmotorsport.es.</p>
       </LegalSection>
     </LegalPage>
   );

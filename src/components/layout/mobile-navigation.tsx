@@ -5,67 +5,50 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 
-import { SignOutButton } from "@/components/auth/sign-out-button";
-import { Button } from "@/components/ui/button";
-import type { NavItem } from "@/lib/modules/contracts";
+import { contact } from "@/lib/hm-content";
 import { cn } from "@/lib/utils";
 
 export function MobileNavigation({
   navigation,
-  signedIn,
-  isAdmin
+  signedIn
 }: {
-  navigation: NavItem[];
+  navigation: readonly { title: string; href: string }[];
   signedIn: boolean;
-  isAdmin: boolean;
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
   return (
     <div className="lg:hidden">
-      <Button
-        variant="outline"
-        size="sm"
+      <button
+        type="button"
+        className="flex size-11 items-center justify-center border border-border bg-card text-foreground transition hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         aria-expanded={open}
         aria-controls="mobile-navigation-panel"
         aria-label={open ? "Cerrar navegación" : "Abrir navegación"}
         onClick={() => setOpen((value) => !value)}
       >
-        {open ? <X size={18} weight="bold" aria-hidden="true" /> : <List size={18} weight="bold" aria-hidden="true" />}
-      </Button>
+        {open ? <X size={22} weight="bold" aria-hidden="true" /> : <List size={22} weight="bold" aria-hidden="true" />}
+      </button>
 
       {open ? (
-        <div id="mobile-navigation-panel" className="absolute inset-x-4 top-[calc(100%+0.5rem)] rounded-2xl border bg-card p-3 shadow-panel">
-          <nav aria-label="Navegación móvil" className="grid gap-1">
-            {navigation.map((item) => (
-              <Link
-                key={`${item.href}-${item.title}`}
-                href={item.href}
-                onClick={() => setOpen(false)}
-                className={cn(
-                  "rounded-lg px-3 py-3 text-sm transition hover:bg-secondary",
-                  pathname === item.href && "bg-secondary font-semibold"
-                )}
-              >
-                <span className="block font-medium">{item.title}</span>
-                <span className="mt-0.5 block text-xs text-muted-foreground">{item.description}</span>
-              </Link>
-            ))}
-            <div className="my-2 h-px bg-border" />
-            {signedIn ? (
-              <>
-                <Link href="/dashboard" className="rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-secondary">Dashboard</Link>
-                <Link href="/account" className="rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-secondary">Cuenta</Link>
-                {isAdmin ? <Link href="/admin" className="rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-secondary">Admin</Link> : null}
-                <SignOutButton className="mt-2 w-full" />
-              </>
-            ) : (
-              <div className="grid grid-cols-2 gap-2">
-                <Button variant="outline" asChild><Link href="/sign-in">Entrar</Link></Button>
-                <Button asChild><Link href="/sign-up">Crear cuenta</Link></Button>
-              </div>
-            )}
+        <div id="mobile-navigation-panel" className="absolute inset-x-0 top-full border-y border-border bg-background p-4 shadow-2xl">
+          <nav aria-label="Navegación móvil" className="mx-auto grid max-w-[1440px]">
+            {navigation.map((item, index) => {
+              const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setOpen(false)}
+                  className={cn("flex items-center justify-between border-b border-border px-2 py-4 text-lg font-semibold uppercase tracking-[-0.01em]", active && "text-primary")}
+                >
+                  {item.title}<span className="font-mono text-[10px] text-muted-foreground">0{index + 1}</span>
+                </Link>
+              );
+            })}
+            {signedIn ? <Link href="/dashboard" onClick={() => setOpen(false)} className="border-b border-border px-2 py-4 text-sm font-semibold">Panel privado</Link> : null}
+            <a href={`https://wa.me/${contact.electronics.phone}`} target="_blank" rel="noreferrer" className="mt-4 inline-flex h-12 items-center justify-center bg-primary px-5 text-sm font-semibold text-primary-foreground">Hablar con el taller</a>
           </nav>
         </div>
       ) : null}

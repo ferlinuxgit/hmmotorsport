@@ -1,16 +1,19 @@
 import type { MetadataRoute } from "next";
 
 import { getSiteUrl } from "@/lib/config/site";
-import { getSiteNavigation } from "@/lib/modules/loader";
-
-function normalizePublicPath(href: string) {
-  const [path = "/"] = href.split("#");
-  return path.startsWith("/") ? path : "/";
-}
+import { serviceDetails } from "@/lib/hm-content";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const siteUrl = getSiteUrl();
-  const publicPaths = new Set(["/", "/privacy", "/terms", ...getSiteNavigation().map((item) => normalizePublicPath(item.href))]);
+  const publicPaths = new Set([
+    "/",
+    "/servicios",
+    "/quienes-somos",
+    "/contacto",
+    "/privacy",
+    "/terms",
+    ...Object.keys(serviceDetails).map((slug) => `/servicios/${slug}`)
+  ]);
   const now = new Date();
 
   return [...publicPaths].map((path) => ({
