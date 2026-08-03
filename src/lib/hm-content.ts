@@ -54,7 +54,7 @@ export const services: Service[] = [
     title: "Banco de potencia DynoRevolt",
     shortTitle: "Banco de potencia",
     description: "HUB Dyno 4x4 con capacidad para medir más de 3.000 CV y software de última generación con integración CAN Bus.",
-    image: "/images/hm/banco-potencia.webp",
+    image: "/images/hm/banco-potencia-frontal.jpeg",
     imageAlt: "Vehículo conectado al banco de potencia HUB Dyno 4x4",
     tags: ["HUB Dyno 4x4", "+3.000 CV", "CAN Bus"],
     detailAvailable: true,
@@ -217,7 +217,7 @@ export const serviceDetails: Record<string, ServiceDetail> = {
     eyebrow: "Fabricante · DynoRevolt",
     title: "Banco de potencia",
     intro: "HUB Dyno 4x4 con capacidad de medición sin límites por encima de 3.000 CV. Software de última generación con integración CAN Bus.",
-    image: "/images/hm/banco-potencia.webp",
+    image: "/images/hm/banco-potencia-frontal.jpeg",
     imageAlt: "Vehículo conectado al banco de potencia HUB Dyno 4x4 de HM Motorsport",
     gallery: [
       {

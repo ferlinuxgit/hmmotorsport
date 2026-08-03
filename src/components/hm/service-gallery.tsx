@@ -52,7 +52,7 @@ export function ServiceGallery({
           fill
           priority={activeIndex === 0}
           sizes="(max-width: 1024px) 100vw, 45vw"
-          className="object-contain"
+          className="object-cover"
         />
 
         <button
