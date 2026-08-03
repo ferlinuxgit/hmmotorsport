@@ -11,7 +11,7 @@ Cada proyecto se plantea según el coche, su uso y el objetivo real. Sin recetas
 ## Servicios
 
 - Calibración ECU, PDM y CAN Bus.
-- Banco de potencia RollingDyno.
+- Banco de potencia DynoRevolt HUB Dyno 4x4, con capacidad para medir más de 3.000 CV e integración CAN Bus.
 - Cableado Clubsport y Motorsport.
 - Preparación de motores, cajas y diferenciales.
 - Fabricación y soldadura TIG.

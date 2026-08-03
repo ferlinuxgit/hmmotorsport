@@ -51,12 +51,12 @@ export const services: Service[] = [
   {
     slug: "banco-de-potencia",
     code: "DYNO",
-    title: "Banco de potencia RollingDyno",
+    title: "Banco de potencia DynoRevolt",
     shortTitle: "Banco de potencia",
-    description: "Medición bajo carga para comprobar resultados, detectar límites y validar cada preparación con datos reales.",
+    description: "HUB Dyno 4x4 con capacidad para medir más de 3.000 CV y software de última generación con integración CAN Bus.",
     image: "/images/hm/banco-potencia.webp",
-    imageAlt: "Vehículo sobre el banco de potencia de rodillos",
-    tags: ["Dyno", "Validación", "Datos"],
+    imageAlt: "Vehículo conectado al banco de potencia HUB Dyno 4x4",
+    tags: ["HUB Dyno 4x4", "+3.000 CV", "CAN Bus"],
     detailAvailable: true,
     contactArea: "electronics"
   },
@@ -129,6 +129,7 @@ export type ServiceDetail = {
   intro: string;
   image: string;
   imageAlt: string;
+  gallery?: readonly { src: string; alt: string }[];
   highlights: readonly string[];
   problemTitle: string;
   problemIntro: string;
@@ -213,12 +214,42 @@ export const serviceDetails: Record<string, ServiceDetail> = {
   },
   "banco-de-potencia": {
     slug: "banco-de-potencia",
-    eyebrow: "Servicio · RollingDyno",
-    title: "Medir, entender y validar antes de exigir más.",
-    intro: "El banco de potencia permite trabajar bajo carga en un entorno controlado. Medimos la entrega, revisamos parámetros críticos y comprobamos si cada modificación funciona como debe.",
+    eyebrow: "Fabricante · DynoRevolt",
+    title: "Banco de potencia",
+    intro: "HUB Dyno 4x4 con capacidad de medición sin límites por encima de 3.000 CV. Software de última generación con integración CAN Bus.",
     image: "/images/hm/banco-potencia.webp",
-    imageAlt: "Vehículo sobre el banco de potencia de rodillos de HM Motorsport",
-    highlights: ["Pruebas bajo carga", "Datos comparables", "Diagnóstico técnico"],
+    imageAlt: "Vehículo conectado al banco de potencia HUB Dyno 4x4 de HM Motorsport",
+    gallery: [
+      {
+        src: "/images/hm/banco-potencia-frontal.jpeg",
+        alt: "Mitsubishi Lancer Evolution en el banco de potencia de HM Motorsport visto desde arriba"
+      },
+      {
+        src: "/images/hm/banco-potencia-trasera.jpeg",
+        alt: "Mitsubishi Lancer Evolution conectado al banco de potencia visto desde la parte trasera"
+      },
+      {
+        src: "/images/hm/banco-potencia-ventilacion.jpeg",
+        alt: "Sistema de ventilación y monitor de control durante una sesión de banco de potencia"
+      },
+      {
+        src: "/images/hm/banco-potencia-vista-general.jpeg",
+        alt: "Vista general de la sala del banco de potencia DynoRevolt de HM Motorsport"
+      },
+      {
+        src: "/images/hm/banco-potencia-vehiculo-preparado.jpeg",
+        alt: "Vehículo de competición preparado para una sesión en el banco de potencia DynoRevolt"
+      },
+      {
+        src: "/images/hm/banco-potencia-ford-frontal.jpeg",
+        alt: "Ford de competición conectado al banco de potencia HUB Dyno 4x4 visto desde la parte frontal"
+      },
+      {
+        src: "/images/hm/banco-potencia-ford-trasera.jpeg",
+        alt: "Ford de competición durante una medición en el banco de potencia visto desde la parte trasera"
+      }
+    ],
+    highlights: ["HUB Dyno 4x4", "+3.000 CV sin límites", "Integración CAN Bus"],
     problemTitle: "Una cifra máxima no explica cómo funciona el coche.",
     problemIntro: "La curva completa, la repetibilidad y los datos registrados muestran mucho más que un pico de potencia. El banco ayuda a localizar límites y tomar decisiones con una base objetiva.",
     problems: [

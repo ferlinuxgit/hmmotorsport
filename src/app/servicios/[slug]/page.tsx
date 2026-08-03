@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 
 import { ContactBand } from "@/components/hm/contact-band";
 import { SectionHeading } from "@/components/hm/section-heading";
+import { ServiceGallery } from "@/components/hm/service-gallery";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { serviceDetails, services } from "@/lib/hm-content";
@@ -50,12 +51,16 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
               <a href="#incluye" className="inline-flex h-12 items-center justify-center border border-border px-6 text-sm font-semibold transition hover:border-foreground/50 hover:bg-card">Qué incluye</a>
             </div>
           </div>
-          <div className="relative aspect-[4/5] overflow-hidden border border-border sm:aspect-[5/4] lg:aspect-[4/5]">
-            <Image src={service.image} alt={service.imageAlt} fill priority sizes="(max-width: 1024px) 100vw, 45vw" className="object-cover" />
-            <div className="absolute inset-x-0 bottom-0 grid gap-px bg-white/15 sm:grid-cols-3">
-              {service.highlights.map((item) => <div key={item} className="flex items-center gap-2 bg-black/82 px-4 py-4 font-mono text-[10px] uppercase tracking-[0.12em] text-white backdrop-blur"><Check size={14} className="shrink-0 text-primary" weight="bold" aria-hidden="true" />{item}</div>)}
+          {service.gallery ? (
+            <ServiceGallery images={service.gallery} highlights={service.highlights} />
+          ) : (
+            <div className="relative aspect-[4/5] overflow-hidden border border-border sm:aspect-[5/4] lg:aspect-[4/5]">
+              <Image src={service.image} alt={service.imageAlt} fill priority sizes="(max-width: 1024px) 100vw, 45vw" className="object-cover" />
+              <div className="absolute inset-x-0 bottom-0 grid gap-px bg-white/15 sm:grid-cols-3">
+                {service.highlights.map((item) => <div key={item} className="flex items-center gap-2 bg-black/82 px-4 py-4 font-mono text-[10px] uppercase tracking-[0.12em] text-white backdrop-blur"><Check size={14} className="shrink-0 text-primary" weight="bold" aria-hidden="true" />{item}</div>)}
+              </div>
             </div>
-          </div>
+          )}
         </section>
 
         <section className="border-y border-border bg-card">
