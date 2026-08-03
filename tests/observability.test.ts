@@ -2,7 +2,14 @@ import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 import { test } from "node:test";
 
-import { createRequestId, getSecurityHeaders, readJsonBody, resolveRequestId } from "../src/lib/observability/http";
+import {
+  createRequestId,
+  getSecurityHeaders,
+  isSameOriginRequest,
+  readBinaryBody,
+  readJsonBody,
+  resolveRequestId
+} from "../src/lib/observability/http";
 import { getOverallHealthState } from "../src/lib/observability/health";
 import { checkRateLimit, getClientIp } from "../src/lib/observability/rate-limit";
 
@@ -58,4 +65,43 @@ test("JSON request bodies enforce a byte limit before parsing", async () => {
 
   const oversized = new Request("https://example.com", { method: "POST", body: JSON.stringify({ value: "x".repeat(100) }) });
   await assert.rejects(() => readJsonBody(oversized, 20), /too large/);
+});
+
+test("binary request bodies are assembled and bounded", async () => {
+  const request = new Request("https://example.test/upload", { method: "PUT", body: new Uint8Array([1, 2, 3, 4]) });
+  assert.deepEqual([...await readBinaryBody(request, 4)], [1, 2, 3, 4]);
+  const oversized = new Request("https://example.test/upload", { method: "PUT", body: new Uint8Array([1, 2, 3]) });
+  await assert.rejects(() => readBinaryBody(oversized, 2), /too large/i);
+});
+
+test("state-changing requests require an allowed origin", () => {
+  assert.equal(
+    isSameOriginRequest(
+      new Request("https://app.example.com/api/admin/users/1", {
+        method: "PATCH",
+        headers: { origin: "https://app.example.com" }
+      })
+    ),
+    true
+  );
+  assert.equal(
+    isSameOriginRequest(
+      new Request("http://internal:3000/api/admin/users/1", {
+        method: "PATCH",
+        headers: { origin: "https://app.example.com" }
+      }),
+      ["https://app.example.com"]
+    ),
+    true
+  );
+  assert.equal(
+    isSameOriginRequest(
+      new Request("https://app.example.com/api/admin/users/1", {
+        method: "PATCH",
+        headers: { origin: "https://evil.example" }
+      })
+    ),
+    false
+  );
+  assert.equal(isSameOriginRequest(new Request("https://app.example.com/api/admin/users/1", { method: "PATCH" })), false);
 });

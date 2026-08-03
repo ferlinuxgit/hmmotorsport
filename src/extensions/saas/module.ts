@@ -30,6 +30,19 @@ export const moduleDefinition: AppModule = {
     }
   ],
   dbTables: ["users", "workspaces", "workspace_members"],
-  paymentProviders: ["stripe"]
+  paymentProviders: ["stripe"],
+  backofficeNavigation: [
+    {
+      key: "saas-workspaces",
+      title: "Tenants",
+      description: "Workspaces, miembros y acceso.",
+      href: "/admin/workspaces"
+    }
+  ],
+  runtimeSettings: [
+    { key: "saas.default_trial_days", title: "Días de prueba", description: "Duración predeterminada para nuevas pruebas SaaS.", kind: "integer", defaultValue: 14, public: false, min: 0, max: 365 }
+  ],
+  featureFlags: [
+    { key: "saas.workspace_invitations", title: "Invitaciones de workspace", description: "Permite crear nuevas invitaciones por email.", defaultEnabled: true, defaultRolloutPercentage: 100 }
+  ]
 };
-

@@ -42,6 +42,8 @@ export async function hasWorkspaceRole(account: AuthAccount, workspaceId: string
   const [membership] = await db
     .select({
       ownerId: workspaces.ownerId,
+      active: workspaces.active,
+      memberUserId: workspaceMembers.userId,
       membershipRole: workspaceMembers.membershipRole
     })
     .from(workspaces)
@@ -52,7 +54,11 @@ export async function hasWorkspaceRole(account: AuthAccount, workspaceId: string
     .where(eq(workspaces.id, workspaceId))
     .limit(1);
 
-  if (!membership) {
+  if (!membership || !membership.active) {
+    return false;
+  }
+
+  if (membership.ownerId !== account.id && membership.memberUserId !== account.id) {
     return false;
   }
 

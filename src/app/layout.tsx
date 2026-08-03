@@ -4,6 +4,7 @@ import { Suspense, type ReactNode } from "react";
 
 import "@/app/globals.css";
 import { AnalyticsTracker } from "@/components/analytics/analytics-tracker";
+import { NavigationProgressProvider, NavigationProgressRouteObserver } from "@/components/navigation/navigation-progress";
 import { getSiteUrl, siteConfig } from "@/lib/config/site";
 
 const headingFont = Manrope({
@@ -62,7 +63,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang="es" suppressHydrationWarning>
+    <html lang="es" suppressHydrationWarning data-scroll-behavior="smooth">
       <body className={`${headingFont.variable} ${monoFont.variable} font-sans antialiased`}>
         <a
           href="#main-content"
@@ -70,10 +71,13 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         >
           Saltar al contenido
         </a>
-        {children}
-        <Suspense fallback={null}>
-          <AnalyticsTracker />
-        </Suspense>
+        <NavigationProgressProvider>
+          {children}
+          <Suspense fallback={null}>
+            <NavigationProgressRouteObserver />
+            <AnalyticsTracker />
+          </Suspense>
+        </NavigationProgressProvider>
       </body>
     </html>
   );

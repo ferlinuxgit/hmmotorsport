@@ -41,12 +41,13 @@ export function decimalToMinorUnits(amount: string, currency = "USD") {
     throw new Error("Amount must be a positive decimal string");
   }
 
-  const [whole = "0", fraction = ""] = normalizedAmount.split(".");
+  const [whole = "0", rawFraction = ""] = normalizedAmount.split(".");
 
-  if (fraction.length > minorUnit) {
+  if (rawFraction.length > minorUnit && /[1-9]/.test(rawFraction.slice(minorUnit))) {
     throw new Error(`Amount has more than ${minorUnit} decimal places for ${normalizeCurrency(currency)}`);
   }
 
+  const fraction = rawFraction.slice(0, minorUnit);
   const normalizedFraction = fraction.padEnd(minorUnit, "0");
   const minorUnits = Number.parseInt(minorUnit === 0 ? whole : `${whole}${normalizedFraction}`, 10);
 

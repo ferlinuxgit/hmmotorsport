@@ -42,6 +42,53 @@ export async function readJsonBody(request: Request, maxBytes: number): Promise<
   return JSON.parse(text);
 }
 
+export async function readBinaryBody(request: Request, maxBytes: number): Promise<Uint8Array> {
+  if (!request.body) throw new Error("Request body is required");
+  const declaredLength = Number(request.headers.get("content-length"));
+  if (Number.isFinite(declaredLength) && declaredLength > maxBytes) throw new Error("Request body is too large");
+  const reader = request.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let bytes = 0;
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    bytes += value.byteLength;
+    if (bytes > maxBytes) {
+      await reader.cancel();
+      throw new Error("Request body is too large");
+    }
+    chunks.push(value);
+  }
+  const result = new Uint8Array(bytes);
+  let offset = 0;
+  for (const chunk of chunks) {
+    result.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return result;
+}
+
+export async function readTextBody(request: Request, maxBytes: number) {
+  return new TextDecoder().decode(await readBinaryBody(request, maxBytes));
+}
+
+export function isSameOriginRequest(request: Request, allowedOrigins: string[] = []) {
+  const origin = request.headers.get("origin");
+
+  if (!origin) {
+    return false;
+  }
+
+  try {
+    const normalizedOrigin = new URL(origin).origin;
+    const requestOrigin = new URL(request.url).origin;
+    const normalizedAllowedOrigins = allowedOrigins.map((value) => new URL(value).origin);
+    return normalizedOrigin === requestOrigin || normalizedAllowedOrigins.includes(normalizedOrigin);
+  } catch {
+    return false;
+  }
+}
+
 export function getSecurityHeaders(options?: { isProduction?: boolean }) {
   const scriptPolicy = options?.isProduction ? "script-src 'self' 'unsafe-inline'" : "script-src 'self' 'unsafe-inline' 'unsafe-eval'";
   const contentSecurityPolicy = [

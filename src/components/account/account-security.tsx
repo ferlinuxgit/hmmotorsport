@@ -1,6 +1,7 @@
 import { ShieldCheck } from "@phosphor-icons/react/dist/ssr";
 
 import { SignOutButton } from "@/components/auth/sign-out-button";
+import { AccountSessionManager } from "@/components/account/account-session-manager";
 import { Badge } from "@/components/ui/badge";
 import type { AuthAccount } from "@/lib/auth/server";
 
@@ -19,6 +20,8 @@ export function AccountSecurity({ account }: { account: AuthAccount }) {
         <p className="mt-1 text-sm leading-6 text-muted-foreground">Finaliza la sesión actual y elimina su cookie segura del navegador.</p>
         <SignOutButton className="mt-5" />
       </div>
+      <AccountSessionManager />
+      <div className="mt-8 border-t border-border/80 pt-6"><p className="font-medium">Portabilidad</p><p className="mt-1 text-sm leading-6 text-muted-foreground">Descarga perfil, memberships, órdenes, entitlements, archivos e invitaciones en JSON.</p><a href="/api/account/export" target="_blank" rel="noreferrer" className="mt-3 inline-flex h-10 items-center rounded-lg border border-border px-4 text-sm font-medium hover:bg-background">Exportar mis datos</a></div>
     </section>
   );
 }

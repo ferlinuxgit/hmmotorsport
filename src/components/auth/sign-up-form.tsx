@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -19,9 +19,9 @@ function resolveErrorMessage(error: unknown) {
 }
 
 export function SignUpForm() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
   const [isPending, setIsPending] = useState(false);
 
   async function handleSubmit(formData: FormData) {
@@ -41,8 +41,7 @@ export function SignUpForm() {
         throw new Error(signUpError.message || "No se pudo crear la cuenta.");
       }
 
-      router.replace(destination);
-      router.refresh();
+      setSuccess(true);
     } catch (submitError) {
       setError(resolveErrorMessage(submitError));
     } finally {
@@ -57,6 +56,7 @@ export function SignUpForm() {
         <CardDescription>Configura tu identidad para acceder a las superficies privadas.</CardDescription>
       </CardHeader>
       <CardContent>
+        {success ? <div className="rounded-xl border border-border bg-secondary p-4 text-sm leading-6"><p className="font-medium">Revisa tu email</p><p className="mt-1 text-muted-foreground">Te hemos enviado un enlace para verificar la cuenta. Caduca en una hora.</p></div> :
         <form
           action={async (formData) => {
             await handleSubmit(formData);
@@ -91,10 +91,10 @@ export function SignUpForm() {
               type="password"
               autoComplete="new-password"
               required
-              minLength={8}
+              minLength={12}
               aria-describedby="sign-up-password-help"
             />
-            <span id="sign-up-password-help" className="block text-xs text-muted-foreground">Mínimo 8 caracteres. Evita reutilizar una contraseña existente.</span>
+            <span id="sign-up-password-help" className="block text-xs text-muted-foreground">Mínimo 12 caracteres. Evita reutilizar una contraseña existente.</span>
           </label>
           <div aria-live="polite" aria-atomic="true">
             {error ? <p className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">{error}</p> : null}
@@ -107,7 +107,7 @@ export function SignUpForm() {
               Ya tengo cuenta
             </Link>
           </div>
-        </form>
+        </form>}
       </CardContent>
     </Card>
   );

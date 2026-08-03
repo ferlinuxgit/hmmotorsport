@@ -195,9 +195,51 @@ Endpoints actuales:
 - `GET /api/health`
 - `GET /api/account/me`
 - `GET /api/admin/users`
+- `PATCH /api/admin/users/:userId`
+- `GET /api/admin/audit`
+- `GET|POST /api/admin/workspaces`
+- `GET|PATCH /api/admin/workspaces/:workspaceId`
+- gestión de miembros bajo `/api/admin/workspaces/:workspaceId/members`
 - `POST /api/payments/checkout`
 
 La intención actual es mantener route handlers pequeños y mover la lógica al core.
+
+## Capa administrativa
+
+El backoffice separa tres responsabilidades:
+
+- `src/app/(app)/admin`: composición de páginas protegidas
+- `src/lib/admin`: consultas y mutaciones operativas
+- `audit_logs`: trazabilidad persistente de mutaciones
+
+Las extensiones registran accesos con `backofficeNavigation`, pero las reglas siguen dentro de servicios explícitos. Las
+mutaciones críticas agrupan cambio y auditoría en una transacción.
+
+## Capa de jobs
+
+`src/lib/jobs` implementa una cola PostgreSQL. Los productores encolan con clave opcional de deduplicación; el runner
+recupera locks vencidos, reclama con `SKIP LOCKED`, ejecuta handlers registrados y aplica backoff exponencial. El endpoint
+interno requiere un secreto independiente y el backoffice permite operar estados terminales.
+
+## Capa de notificaciones e invitaciones
+
+`src/lib/notifications` separa renderizado, transporte y persistencia. Cada correo nace como una fila de `notifications` y
+un job deduplicado dentro de la misma transacción que el evento de negocio. En desarrollo el provider `console` evita
+dependencias externas; staging y producción requieren SMTP explícito.
+
+Las invitaciones de workspace usan un identificador firmado con HMAC y almacenan únicamente su hash SHA-256. La URL se
+reconstruye justo antes de enviar, expira, exige que la cuenta autenticada tenga el email invitado y acepta membership y
+auditoría de forma atómica. Invitaciones concurrentes para el mismo workspace/email se serializan en PostgreSQL.
+
+## Capa de almacenamiento
+
+`src/lib/storage` expone un contrato común para filesystem local y S3-compatible. La API crea primero un registro
+`pending`, valida tamaño y MIME, reclama la operación para evitar carreras, almacena el binario, calcula SHA-256 y sólo
+entonces publica el asset como `ready`. Descargas y borrados vuelven a comprobar identidad o membership en servidor.
+
+El provider local facilita desarrollo y Docker con volumen persistente. Producción exige S3-compatible para que múltiples
+réplicas compartan objetos. Los binarios siguen pasando por endpoints same-origin, por lo que no se exponen credenciales,
+URLs públicas ni reglas CORS del bucket al navegador.
 
 ## Capa de despliegue
 
@@ -232,12 +274,12 @@ Reduce superficie de error y riesgo en flujos de pago.
 
 Permite que marketing, commerce y SaaS coexistan sin convertir el core en una vertical concreta.
 
-## Limitaciones actuales de la arquitectura
+## Límites deliberados de la arquitectura
 
 - el schema inicial está versionado en una sola migración limpia
 - los flujos avanzados de Better Auth se habilitan solo cuando el producto los necesita
 - RBAC sigue siendo simple
-- la cobertura de tests sigue siendo ligera
+- los providers de notificación adicionales a SMTP se implementan tras el contrato existente
 - la observabilidad ya existe como base, pero no sustituye métricas/alertas del proyecto final
 
 La arquitectura es buena como base. Todavía no es excelente como plataforma madura.

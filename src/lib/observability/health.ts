@@ -1,5 +1,5 @@
 export type HealthState = "ok" | "degraded" | "error";
-export type HealthChecks = Record<"app" | "configuration" | "database" | "payments", HealthState>;
+export type HealthChecks = Record<string, HealthState>;
 
 export function getOverallHealthState(checks: HealthChecks): HealthState {
   const values = Object.values(checks);

@@ -79,7 +79,7 @@ export async function getAdminOverview() {
   ]);
 
   return {
-    configurationIssues: getProductionReadinessIssues(),
+    configurationIssues: getProductionReadinessIssues(process.env, { requiredPaymentProviders: enabledPaymentProviders }),
     modules,
     enabledPaymentProviders,
     users: userStats ?? { total: 0, active: 0, admins: 0, verified: 0 },

@@ -91,6 +91,26 @@ pre {
   background: rgba(14, 116, 144, 0.18);
 }
 
+.navigation-progress {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 100;
+  height: 3px;
+  pointer-events: none;
+  overflow: hidden;
+  background: hsl(var(--primary) / 0.12);
+}
+
+.navigation-progress__bar {
+  width: 100%;
+  height: 100%;
+  transform-origin: left center;
+  background: hsl(var(--primary));
+  box-shadow: 0 0 14px hsl(var(--primary) / 0.7);
+  transition: transform 180ms ease-out;
+  will-change: transform;
+}
+
 .grid-surface {
   background-image:
     linear-gradient(hsl(var(--foreground) / 0.04) 1px, transparent 1px),

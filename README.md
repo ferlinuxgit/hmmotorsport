@@ -19,13 +19,17 @@ Lecturas recomendadas:
 
 ## Stack
 
+- `Node.js 24 LTS`
 - `Next.js` con `App Router`
 - `Tailwind CSS` + estructura compatible con `shadcn/ui`
 - `Phosphor Icons` con una única familia visual
-- `PostgreSQL`
+- `PostgreSQL 18`
 - `Drizzle ORM`
 - `Better Auth` para autenticación y sesiones
 - Integración de pagos con `Stripe` y `PayPal`
+- Jobs y outbox persistidos en PostgreSQL
+- Storage privado local o S3
+- Tests unitarios, integración PostgreSQL y E2E con Playwright
 - Arquitectura de módulos auto-registrados
 
 ## Principios de la base
@@ -48,9 +52,9 @@ La estrategia no es meter todo en el core, sino permitir que las diferencias de 
 ## Arranque local
 
 1. Copia `.env.example` a `.env`
-2. Levanta PostgreSQL con `docker compose up -d`
+2. Levanta PostgreSQL con `docker compose up -d postgres`
 3. Configura Better Auth (`BETTER_AUTH_SECRET` y `BETTER_AUTH_URL`)
-4. Instala dependencias con `npm install`
+4. Instala dependencias reproducibles con `npm ci`
 5. Aplica migraciones con `npm run db:migrate`
 6. Carga datos iniciales con `npm run db:seed`
 7. Sincroniza módulos con `npm run modules:sync`
@@ -65,9 +69,10 @@ En producción configura `RATE_LIMIT_BACKEND=database`, `TRUST_PROXY_HEADERS=tru
 - La base SEO incluye metadata global, Open Graph, sitemap, robots y manifest
 - El build verifica que Tailwind genere utilities esenciales antes de considerarse válido
 - La UI incluye navegación móvil, temas por preferencia del sistema y estados globales de loading, error y 404
+- La navegación interna muestra progreso global inmediato y accesible, también para cambios programáticos
 - Checkout solo acepta redirects internos que empiecen por `/`
 - Better Auth reutiliza la tabla `users` del dominio interno y añade `accounts`, `sessions` y `verifications`
-- `npm install`, `npm run lint`, `npm run typecheck` y `npm run build` ya fueron validados
+- `npm run lint`, `npm run typecheck`, unitarios, E2E, integraciones PostgreSQL y build están validados
 - El core incluye liveness, readiness, logs estructurados y cabeceras de seguridad base
 - El core incluye rate limiting distribuido para auth, checkout, analítica y endpoints administrativos
 - Los webhooks son idempotentes y conservan un historial mínimo en `payment_events`
@@ -114,8 +119,12 @@ src/
   lib/
     config/             # configuración tipada
     db/                 # cliente y esquemas Drizzle
+    jobs/               # cola PostgreSQL y runner
     modules/            # contratos y loader
+    notifications/      # email tipado y providers
     payments/           # abstracción de providers
+    storage/            # archivos privados local/S3
+    workspaces/         # invitaciones y tenancy
 ```
 
 ## Extender sin tocar el core
@@ -131,7 +140,39 @@ src/
 - `GET /api/live`
 - `GET /api/ready`
 - `GET /api/account/me`
+- `GET /api/account/export`
 - `GET /api/admin/users`
+- `PATCH /api/admin/users/:userId`
+- `GET /api/admin/audit`
+- `GET|POST /api/admin/workspaces`
+- `GET|PATCH /api/admin/workspaces/:workspaceId`
+- `POST /api/admin/workspaces/:workspaceId/members`
+- `PATCH|DELETE /api/admin/workspaces/:workspaceId/members/:userId`
+- `POST /api/admin/workspaces/:workspaceId/invitations`
+- `DELETE /api/admin/workspaces/:workspaceId/invitations/:invitationId`
+- `POST /api/invitations/accept`
+- `GET|POST /api/files`
+- `GET|PUT /api/files/:fileId/content`
+- `DELETE /api/files/:fileId`
+- `GET /api/admin/files`
+- `GET /api/admin/jobs`
+- `PATCH /api/admin/jobs/:jobId`
+- `GET /api/admin/configuration`
+- `PATCH /api/admin/configuration/settings/:key`
+- `PATCH /api/admin/configuration/flags/:key`
+- `PUT|DELETE /api/admin/configuration/flags/:key/workspaces/:workspaceId`
+- `GET|POST /api/admin/content`
+- `GET|PATCH /api/admin/content/:pageId`
+- `GET|POST /api/admin/commerce/products`
+- `GET|PATCH /api/admin/commerce/products/:productId`
+- `POST /api/admin/commerce/products/:productId/prices`
+- `PATCH /api/admin/commerce/prices/:priceId`
+- `GET /api/admin/commerce/orders`
+- `GET /api/admin/billing`
+- `POST /api/admin/billing/orders/:orderId/refunds`
+- `POST /api/admin/billing/orders/:orderId/reconcile`
+- `POST /api/internal/jobs/run`
+- `GET /api/config`
 - `GET /api/admin/overview`
 - `POST /api/analytics/events`
 - `POST /api/auth/*`
@@ -152,20 +193,31 @@ src/
 
 ## Backoffice y analítica
 
-- `/admin` incluye un backoffice operativo para usuarios, sesiones, órdenes, billing, módulos, readiness y analítica.
+- `/admin` incluye un resumen operativo para usuarios, sesiones, órdenes, billing, módulos, readiness y analítica.
+- `/admin/users` permite buscar, filtrar, activar, desactivar y cambiar roles sin bloquear al último administrador.
+- `/admin/audit` conserva la trazabilidad de las mutaciones administrativas.
+- `/admin/workspaces` opera tenants, ownership y membresías con invariantes transaccionales.
+- El detalle de workspace crea y revoca invitaciones; la entrega de email usa el outbox y nunca persiste el token en claro.
+- `/admin/jobs` permite observar, cancelar y reintentar jobs persistidos en PostgreSQL.
+- `/admin/files` permite buscar y operar objetos privados; cada workspace incluye subida, descarga y borrado autorizados.
+- `/admin/configuration` opera settings y feature flags versionados, con rollout y overrides por workspace.
+- `/admin/content` incluye editor draft/published/archived, SEO y publicación pública segura.
+- `/admin/commerce` opera catálogo, precios de pago único y órdenes; `/admin/billing` gestiona entitlements, reembolsos y reconciliación.
+- Los módulos pueden registrar superficies con `backofficeNavigation`; las reglas y permisos permanecen en su dominio.
 - `GET /api/admin/overview` expone el resumen para integraciones internas protegidas por rol admin.
 - El tracker de primera parte registra `page_view` en `analytics_events` mediante `POST /api/analytics/events`.
 - La analítica no almacena IP por defecto y usa `sessionId` local para métricas agregadas.
 
-## Pendientes típicos al usarla en un producto real
+## Decisiones que corresponden al producto real
 
-- Crear paneles reales para contenido, catálogo o billing
-- Ampliar autorización por workspace a recursos concretos de cada producto
-- Añadir reconciliación periódica de pagos además de webhooks
+- Modelar los recursos, reglas y permisos finos de la vertical concreta
+- Añadir suscripciones, impuestos o facturación fiscal cuando el negocio los requiera
+- Configurar backups, alertas, SLO, retención y obligaciones regulatorias del entorno final
+- Sustituir identidad visual, copy, legales y contenido iniciales
 
 ## Hacia la excelencia
 
-Como boilerplate base para construir websites y webapps, la base ya alcanza un nivel de producción alto:
+Como boilerplate base para construir websites y webapps, la foundation alcanza el estándar `10/10` definido para su alcance:
 
 - despliegue reproducible
 - migraciones runtime comprobadas
@@ -174,13 +226,16 @@ Como boilerplate base para construir websites y webapps, la base ya alcanza un n
 - rate limiting distribuido en endpoints sensibles
 - webhooks idempotentes y auditables
 - backoffice completo de operación inicial
+- contenido, comercio, billing, configuración, jobs y storage operables
+- autenticación verificada, recuperación de contraseña y gestión de sesiones
+- tests unitarios, E2E e integración PostgreSQL
 - analítica interna de primera parte
 - SEO técnico base
 - observabilidad y trazabilidad iniciales
 
 Lo que sigue faltando ya no pertenece al boilerplate genérico, sino al producto concreto que se construya encima:
 
-- paneles reales de negocio
+- reglas y paneles específicos de la vertical
 - métricas y alertas del entorno final
 - tests de integración específicos del dominio
 

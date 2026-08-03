@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
 import { CreditCard, Cube, CurrencyDollar, Database, Pulse, ShieldCheck, Users } from "@phosphor-icons/react/dist/ssr";
 
-import { SiteHeader } from "@/components/layout/site-header";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { requireAdminAccount } from "@/lib/auth/rbac";
@@ -99,13 +97,7 @@ function AnalyticsBars({ overview }: { overview: AdminOverview }) {
 }
 
 export default async function AdminPage() {
-  const account = await requireAdminAccount().catch((error) => {
-    if (error instanceof Error && error.message === "Forbidden") {
-      redirect("/dashboard");
-    }
-
-    redirect("/sign-in");
-  });
+  const account = await requireAdminAccount();
   const overview = await getAdminOverview();
   const revenueLabel =
     overview.orders.revenueByCurrency.length === 0
@@ -113,9 +105,7 @@ export default async function AdminPage() {
       : overview.orders.revenueByCurrency.map((item) => formatMoney(item.revenue, item.currency)).join(" / ");
 
   return (
-    <div className="min-h-[100dvh]">
-      <SiteHeader />
-      <main id="main-content" className="mx-auto max-w-7xl space-y-10 px-4 py-10 sm:px-6 sm:py-14">
+    <main id="main-content" className="mx-auto max-w-7xl space-y-10 px-4 py-10 sm:px-6 sm:py-14">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div className="space-y-3">
             <p className="font-mono text-xs font-medium uppercase tracking-[0.14em] text-primary">Backoffice</p>
@@ -156,7 +146,7 @@ export default async function AdminPage() {
           />
         </div>
 
-        <div className="grid gap-4 lg:grid-cols-[1.4fr_0.8fr]">
+        <div id="analytics" className="scroll-mt-36 grid gap-4 lg:grid-cols-[1.4fr_0.8fr]">
           <Card>
             <CardHeader>
               <CardTitle>Actividad web</CardTitle>
@@ -249,7 +239,7 @@ export default async function AdminPage() {
           </Card>
         </div>
 
-        <div className="grid gap-4 xl:grid-cols-3">
+        <div id="commerce" className="scroll-mt-36 grid gap-4 xl:grid-cols-3">
           <Card className="xl:col-span-2">
             <CardHeader>
               <CardTitle>Órdenes recientes</CardTitle>
@@ -370,7 +360,7 @@ export default async function AdminPage() {
           </Card>
         </div>
 
-        <Card>
+        <Card id="tenants" className="scroll-mt-36">
           <CardHeader>
             <CardTitle>Datos operativos</CardTitle>
             <CardDescription>Estado resumido de los modelos transversales del boilerplate.</CardDescription>
@@ -398,7 +388,6 @@ export default async function AdminPage() {
             </div>
           </CardContent>
         </Card>
-      </main>
-    </div>
+    </main>
   );
 }

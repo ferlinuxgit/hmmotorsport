@@ -7,6 +7,7 @@ import { eq } from "drizzle-orm";
 import { getBetterAuthEnv } from "@/lib/config/env";
 import { getDb } from "@/lib/db/client";
 import * as schema from "@/lib/db/schema";
+import { sendAuthActionEmail } from "@/lib/notifications/auth-email";
 
 function getTrustedOrigins(appUrl: string, trustedOrigins?: string) {
   const origins = new Set([appUrl]);
@@ -42,9 +43,19 @@ function createAuth() {
     },
     emailAndPassword: {
       enabled: true,
-      autoSignIn: true,
-      minPasswordLength: 8
+      autoSignIn: false,
+      minPasswordLength: 12,
+      requireEmailVerification: true,
+      resetPasswordTokenExpiresIn: 3_600,
+      sendResetPassword: async ({ user, url }) => sendAuthActionEmail({ kind: "reset", email: user.email, name: user.name, url })
     },
+    emailVerification: {
+      expiresIn: 3_600,
+      sendOnSignUp: true,
+      autoSignInAfterVerification: true,
+      sendVerificationEmail: async ({ user, url }) => sendAuthActionEmail({ kind: "verify", email: user.email, name: user.name, url })
+    },
+    session: { expiresIn: 60 * 60 * 24 * 7, updateAge: 60 * 60 * 24 },
     databaseHooks: {
       session: {
         create: {

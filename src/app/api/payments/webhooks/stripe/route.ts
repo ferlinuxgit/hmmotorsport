@@ -2,8 +2,9 @@ import { NextResponse } from "next/server";
 import Stripe from "stripe";
 
 import { getPaymentsEnv } from "@/lib/config/env";
-import { REQUEST_ID_HEADER, resolveRequestId } from "@/lib/observability/http";
+import { REQUEST_ID_HEADER, readTextBody, resolveRequestId } from "@/lib/observability/http";
 import { logger } from "@/lib/observability/logger";
+import { checkDistributedRateLimit, getClientIp, rateLimitResponse } from "@/lib/observability/rate-limit";
 import { applyOrderPaymentEvent, type OrderStatus } from "@/lib/payments/orders";
 
 export function mapStripeStatus(eventType: string, paymentStatus?: string | null): OrderStatus | null {
@@ -44,6 +45,8 @@ export function getStripeOrderUpdate(event: Stripe.Event) {
 }
 
 export async function POST(request: Request) {
+  const rate = await checkDistributedRateLimit({ key: `stripe-webhook:${getClientIp(request.headers)}`, limit: 300, windowMs: 60_000 });
+  if (!rate.allowed) return rateLimitResponse(rate);
   const requestId = resolveRequestId(request.headers);
   const env = getPaymentsEnv();
 
@@ -61,7 +64,7 @@ export async function POST(request: Request) {
   let event: Stripe.Event;
 
   try {
-    event = stripe.webhooks.constructEvent(await request.text(), signature, env.STRIPE_WEBHOOK_SECRET);
+    event = stripe.webhooks.constructEvent(await readTextBody(request, 1_048_576), signature, env.STRIPE_WEBHOOK_SECRET);
   } catch {
     logger.warn("Rejected Stripe webhook with invalid signature", { requestId });
     return NextResponse.json({ error: "Invalid Stripe signature" }, { status: 400 });

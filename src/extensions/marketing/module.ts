@@ -30,6 +30,19 @@ export const moduleDefinition: AppModule = {
     }
   ],
   dbTables: ["content_pages"],
-  paymentProviders: []
+  paymentProviders: [],
+  backofficeNavigation: [
+    {
+      key: "marketing-analytics",
+      title: "Audiencia",
+      description: "Actividad y analítica de primera parte.",
+      href: "/admin/content"
+    }
+  ],
+  runtimeSettings: [
+    { key: "marketing.announcement", title: "Anuncio público", description: "Mensaje breve disponible para superficies públicas.", kind: "string", defaultValue: "", public: true, max: 240 }
+  ],
+  featureFlags: [
+    { key: "marketing.experimental_home", title: "Home experimental", description: "Activa una variante de portada para rollout gradual.", defaultEnabled: false, defaultRolloutPercentage: 0 }
+  ]
 };
-

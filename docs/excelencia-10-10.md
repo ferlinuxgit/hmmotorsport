@@ -75,6 +75,16 @@ Debe cumplir:
 - migraciones y seeds reproducibles
 - auth con sync y webhooks base
 - billing base con webhooks y cierre inicial
+- backoffice con gestión de usuarios, paginación y filtros
+- auditoría transaccional y navegación administrativa modular
+- operación multi-tenant con ownership y membresías protegidas
+- jobs/outbox, email e invitaciones firmadas
+- storage privado local/S3 con integridad y autorización
+- configuración runtime y feature flags auditables
+- contenido versionado, catálogo y precios de pago único
+- reconciliación, reembolsos y entitlements
+- seguridad de cuenta, recuperación y exportación de datos
+- E2E Chromium e integraciones contra PostgreSQL real
 
 ## Lo que ya no corresponde exigir al boilerplate genérico
 
@@ -108,6 +118,13 @@ Estas piezas siguen siendo necesarias para un producto final, pero no son requis
 
 - permisos coherentes a nivel base
 - flujos de billing cerrados a nivel boilerplate
+- backoffice capaz de operar el core sin editar PostgreSQL manualmente
+- mutaciones administrativas autorizadas y auditables
+
+## Siguiente umbral
+
+La foundation está completa dentro de su alcance. La evolución debe ocurrir mediante módulos de negocio con contratos
+pequeños y providers reemplazables, conservando las garantías de auth, tenancy, jobs, configuración, storage y billing.
 
 ## Anti-patrones que impedirían llegar a 10/10
 
@@ -139,6 +156,6 @@ Podemos hablar de una base `10/10` para reutilización cuando:
 
 ## Conclusión
 
-Esta base ya cumple un estándar alto de producción para servir como punto de partida serio.
+Esta base cumple la definición práctica `10/10` para servir como punto de partida serio.
 
 El trabajo que sigue ya no es “arreglar el boilerplate”, sino construir correctamente cada proyecto encima sin degradar estas garantías.

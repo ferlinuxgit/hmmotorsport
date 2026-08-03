@@ -27,6 +27,7 @@ Si es tu primera vez en el proyecto, este es el orden recomendado:
 - [Onboarding](./onboarding.md)
 - [Referencia de entorno](./referencia-entorno.md)
 - [Referencia API](./referencia-api.md)
+- [Backoffice extensible](./backoffice.md)
 - [Modelo de datos](./modelo-datos.md)
 - [Módulos y extensiones](./modulos-y-extensiones.md)
 - [Buenas prácticas](./buenas-practicas.md)

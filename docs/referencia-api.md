@@ -73,15 +73,20 @@ Respuesta esperada:
   "status": "ok",
   "checks": {
     "app": "ok",
+    "configuration": "ok",
     "database": "ok",
-    "payments": "ok"
+    "payments": "ok",
+    "jobs": "ok",
+    "notifications": "ok",
+    "storage": "ok"
   },
   "modules": ["marketing", "commerce", "saas"],
   "timestamp": "2026-01-01T00:00:00.000Z"
 }
 ```
 
-`status` puede ser `ok`, `degraded` o `error`. En producción, pagos incompletos para proveedores requeridos devuelven `degraded`.
+`status` puede ser `ok`, `degraded` o `error`. Jobs atrasados, entregas fallidas o pagos incompletos pueden degradar el
+servicio; base de datos o configuración de producción inválidas producen error.
 La respuesta incluye `configurationIssues` cuando el entorno de producción usa secretos placeholder, no declara `BUILD_SHA` o tiene configuración crítica inválida.
 
 Uso típico:
@@ -123,6 +128,11 @@ Errores posibles:
 
 - `401 Unauthorized`
 
+### `GET /api/account/export`
+
+Devuelve a la cuenta autenticada un JSON descargable con su perfil, workspaces, membresías, órdenes, entitlements y
+archivos. No incluye hashes, tokens de sesión, credenciales ni secretos de providers.
+
 Uso típico:
 
 - hidratar estado inicial de cuenta
@@ -140,7 +150,7 @@ Archivo:
 
 Propósito:
 
-- devolver una lista inicial de usuarios internos
+- devolver usuarios internos con búsqueda, filtros y paginación
 
 Auth:
 
@@ -165,9 +175,23 @@ Respuesta esperada:
       "createdAt": "2026-01-01T00:00:00.000Z",
       "lastSignInAt": "2026-01-01T00:00:00.000Z"
     }
-  ]
+  ],
+  "pagination": {
+    "page": 1,
+    "pageSize": 25,
+    "total": 1,
+    "pages": 1
+  }
 }
 ```
+
+Query params:
+
+- `q`: email o nombre
+- `role`: `all`, `user` o `admin`
+- `status`: `all`, `active` o `inactive`
+- `page`: desde `1`
+- `pageSize`: entre `1` y `100`
 
 Errores posibles:
 
@@ -181,11 +205,129 @@ Uso típico:
 
 Estado de madurez:
 
-- funcional, pero todavía no es un panel admin completo
+- funcional y paginado
 
 Archivo:
 
 - [src/app/api/admin/users/route.ts](../src/app/api/admin/users/route.ts)
+
+### `PATCH /api/admin/users/:userId`
+
+Propósito:
+
+- cambiar el rol o estado activo de una cuenta
+
+Auth y autorización:
+
+- requiere sesión y rol admin
+
+Body:
+
+```json
+{
+  "role": "admin",
+  "active": true
+}
+```
+
+Al menos uno de los campos debe estar presente. La operación impide retirar el propio acceso y desactivar o degradar el
+último administrador activo. El cambio y `user.updated` se escriben en una sola transacción.
+
+Errores posibles:
+
+- `400` payload inválido
+- `401` sesión ausente
+- `403` rol u origen inválido
+- `404` usuario inexistente
+- `409` autoprotección o último administrador
+- `429` rate limit
+
+### `GET /api/admin/audit`
+
+Propósito:
+
+- consultar el historial paginado de acciones administrativas
+
+Auth y autorización:
+
+- requiere sesión y rol admin
+
+Query params:
+
+- `q`: acción, entidad, identificador o email del actor
+- `action`: nombre exacto de acción
+- `page`: desde `1`
+- `pageSize`: entre `1` y `100`
+
+### Workspaces administrativos
+
+Endpoints:
+
+- `GET /api/admin/workspaces`: búsqueda, estado y paginación
+- `POST /api/admin/workspaces`: crea un workspace y su membership owner
+- `GET /api/admin/workspaces/:workspaceId`: detalle y miembros
+- `PATCH /api/admin/workspaces/:workspaceId`: nombre, slug, estado o transferencia de ownership
+- `POST /api/admin/workspaces/:workspaceId/members`: añade una cuenta activa
+- `PATCH /api/admin/workspaces/:workspaceId/members/:userId`: cambia rol `admin` o `member`
+- `DELETE /api/admin/workspaces/:workspaceId/members/:userId`: retira una membresía
+- `POST /api/admin/workspaces/:workspaceId/invitations`: crea una invitación y encola su email
+- `DELETE /api/admin/workspaces/:workspaceId/invitations/:invitationId`: revoca una invitación pendiente
+- `POST /api/invitations/accept`: acepta la invitación para la cuenta autenticada del mismo email
+
+Todas las mutaciones requieren sesión admin, origen válido, rate limit y payload validado. El owner no puede degradarse ni
+eliminarse mediante endpoints de membresía; debe transferirse el ownership. Cambios y auditoría comparten transacción.
+
+Los tokens de invitación se firman, sólo se guarda su hash y nunca se devuelven desde la API administrativa. El email se
+entrega de forma asíncrona mediante `background_jobs`. La aceptación rechaza enlaces manipulados, expirados, revocados,
+ya consumidos o abiertos desde otra identidad.
+
+### Archivos privados
+
+- `POST /api/files`: reserva un asset con `filename`, `mimeType`, `sizeBytes` y `workspaceId` opcional
+- `PUT /api/files/:fileId/content`: recibe el cuerpo binario y exige el MIME y tamaño declarados
+- `GET /api/files/:fileId/content`: entrega el objeto tras validar cuenta o membership
+- `DELETE /api/files/:fileId`: elimina el objeto y conserva metadata mínima de auditoría
+- `GET /api/files`: lista assets propios o los de `?workspaceId=`
+- `GET /api/admin/files`: listado administrativo paginado y filtrable
+
+Las mutaciones requieren origen same-origin y rate limit. El servidor genera el object key, limita el body antes de
+materializarlo, calcula SHA-256 y nunca acepta rutas de almacenamiento enviadas por el cliente.
+
+### Jobs administrativos
+
+- `GET /api/admin/jobs`: consulta paginada por estado, tipo o deduplication key
+- `PATCH /api/admin/jobs/:jobId`: cancela jobs en espera o reintenta estados terminales permitidos
+- `POST /api/internal/jobs/run`: protegido por `JOB_RUNNER_SECRET`; encola el sweep de reconciliación y ejecuta un batch
+
+### Configuración runtime
+
+- `GET /api/config`: devuelve únicamente settings públicos y flags evaluados para el subject actual
+- `GET /api/admin/configuration`: lista definiciones, valores, versiones y overrides
+- `PATCH /api/admin/configuration/settings/:key`: cambia un setting con `expectedVersion`
+- `PATCH /api/admin/configuration/flags/:key`: cambia estado o rollout con `expectedVersion`
+- `PUT|DELETE /api/admin/configuration/flags/:key/workspaces/:workspaceId`: establece o retira un override
+
+Las claves disponibles proceden del registro de módulos; una clave desconocida o duplicada falla de forma explícita.
+
+### Contenido
+
+- `GET|POST /api/admin/content`: consulta o crea páginas draft
+- `GET|PATCH /api/admin/content/:pageId`: obtiene y actualiza contenido, SEO, estado y versión
+- `GET /pages/:slug`: render público, sólo para contenido `published`
+
+### Comercio y billing
+
+- `GET|POST /api/admin/commerce/products`: catálogo paginado y creación
+- `GET|PATCH /api/admin/commerce/products/:productId`: detalle y edición optimista
+- `POST /api/admin/commerce/products/:productId/prices`: crea un precio de pago único
+- `PATCH /api/admin/commerce/prices/:priceId`: activa o desactiva un precio versionado
+- `GET /api/admin/commerce/orders`: órdenes paginadas y filtrables
+- `GET /api/admin/billing`: entitlements y reembolsos recientes
+- `POST /api/admin/billing/orders/:orderId/refunds`: solicita un reembolso idempotente y asíncrono
+- `POST /api/admin/billing/orders/:orderId/reconcile`: encola reconciliación de una orden
+
+El campo `interval` no admite `month` o `year` en el contrato base: los adaptadores incluidos operan pagos únicos y no
+simulan suscripciones.
 
 ### `GET /api/admin/overview`
 
@@ -265,7 +407,8 @@ Archivo:
 
 Propósito:
 
-- exponer el handler de Better Auth para sign-in, sign-up, sign-out y sesión
+- exponer el handler de Better Auth para sign-in, sign-up, verificación de email, recuperación, cambio de contraseña,
+  sign-out y sesión
 
 Auth:
 
@@ -334,7 +477,7 @@ Uso típico:
 
 Estado de madurez:
 
-- base de producción inicial con persistencia de orden y webhooks de provider
+- flujo base de pago único con orden persistida, webhooks, reconciliación, reembolsos y entitlements
 
 Archivo:
 
@@ -353,8 +496,11 @@ La base incluye rate limiting para:
 - operaciones mutantes de `POST /api/auth/*`
 - `POST /api/payments/checkout`
 - `GET /api/admin/users`
+- `PATCH /api/admin/users/:userId`
+- `GET /api/admin/audit`
 - `GET /api/admin/overview`
 - `POST /api/analytics/events`
+- APIs de archivos, jobs, configuración, contenido, comercio y billing
 
 En desarrollo usa memoria por defecto. En producción, `RATE_LIMIT_BACKEND=database` activa buckets atómicos compartidos en PostgreSQL y `TRUST_PROXY_HEADERS=true` permite leer la IP que debe sobrescribir el reverse proxy confiable.
 
@@ -364,6 +510,10 @@ La API admin valida:
 
 - autenticación
 - rol admin
+- origen de las mutaciones autenticadas por cookie
+- tamaño y schema del payload
+- autoprotección y conservación del último admin activo
+- escritura transaccional del evento de auditoría
 
 ### Checkout
 
@@ -371,18 +521,11 @@ El endpoint de checkout ya no acepta redirects externos arbitrarios. Solo admite
 
 Los webhooks registran cada evento en `payment_events` y aplican el cambio de orden dentro de la misma transacción. Los reintentos del proveedor son idempotentes y una orden pagada no retrocede a `failed` o `cancelled`.
 
-## Limitaciones actuales
+## Límites deliberados
 
-- no existe versionado formal de API
-- no hay documentación OpenAPI/Swagger
-- no hay capa avanzada de errores normalizados
-- falta reconciliación periódica de pagos para cubrir eventos perdidos
-
-## Próximos pasos recomendados
-
-1. documentar errores de forma más formal
-2. añadir reconciliación periódica de pagos
-3. valorar versionado de API si el proyecto crece
+- no existe versionado formal porque la API todavía es interna a la aplicación
+- no se genera OpenAPI automáticamente; conviene añadirlo cuando existan consumidores externos
+- los errores administrativos comparten una respuesta estable, pero cada nueva vertical debe documentar sus códigos
 
 ## Relación con el core
 

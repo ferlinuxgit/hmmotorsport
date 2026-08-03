@@ -16,6 +16,7 @@ const logLevelRank: Record<LogLevel, number> = {
 
 function shouldLog(level: LogLevel) {
   const env = getObservabilityEnv();
+  if (env.LOG_LEVEL === "silent") return false;
   return logLevelRank[level] >= logLevelRank[env.LOG_LEVEL];
 }
 

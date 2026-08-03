@@ -1,5 +1,15 @@
 # Sistema visual
 
+## Progreso de navegación
+
+La app monta un único `NavigationProgressProvider` en el layout raíz. Una barra superior accesible aparece al navegar entre
+rutas internas, incluyendo cambios de query y back/forward, y termina cuando App Router confirma el nuevo estado. Enlaces
+externos, descargas, hashes, nuevas pestañas y clics con modificadores no activan el indicador.
+
+Para navegación programática se usa `useProgressRouter()` en lugar de `useRouter()` cuando `push`, `replace`, `back` o
+`forward` cambian de página. `refresh()` no activa la barra porque no garantiza un cambio de URL. Un watchdog evita estados
+atascados y `prefers-reduced-motion` elimina la animación sin ocultar el estado.
+
 ## Objetivo
 
 La interfaz debe comunicar que el repositorio es una foundation técnica seria, no un producto vertical terminado. El lenguaje combina estructura editorial en marketing con minimalismo funcional en las superficies privadas.

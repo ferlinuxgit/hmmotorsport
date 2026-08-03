@@ -31,6 +31,7 @@ test("resolveDatabaseUrl requires DATABASE_URL for external mode", () => {
 test("money helpers normalize provider input", () => {
   assert.equal(decimalToMinorUnits("19.00"), 1900);
   assert.equal(decimalToMinorUnits("19.9"), 1990);
+  assert.equal(decimalToMinorUnits("19.000", "EUR"), 1900);
   assert.equal(decimalToMinorUnits("500", "JPY"), 500);
   assert.equal(decimalToMinorUnits("19.999", "KWD"), 19999);
   assert.equal(getCurrencyMinorUnit("jpy"), 0);
@@ -45,7 +46,7 @@ test("package dependencies are pinned", async () => {
   };
 
   const versions = [...Object.values(packageJson.dependencies), ...Object.values(packageJson.devDependencies)];
-  assert.equal(versions.some((version) => version === "latest"), false);
+  assert.equal(versions.every((version) => /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(version) || version === "file:vendor/brace-expansion-compat"), true);
 });
 
 test("production readiness rejects placeholder secrets", () => {
@@ -80,8 +81,43 @@ test("production readiness accepts explicit production settings", () => {
     DATABASE_URL: "postgres://user:password@db.example.com:5432/app",
     RATE_LIMIT_BACKEND: "database",
     TRUST_PROXY_HEADERS: "true",
-    BUILD_SHA: "abc123"
+    BUILD_SHA: "abc123",
+    JOB_RUNNER_SECRET: "real-job-runner-secret-with-at-least-32-characters",
+    EMAIL_PROVIDER: "smtp",
+    EMAIL_FROM: "noreply@example.com",
+    SMTP_URL: "smtp://user:password@mail.example.com:587",
+    STORAGE_PROVIDER: "s3",
+    S3_BUCKET: "production-assets",
+    S3_REGION: "eu-west-1"
   } as unknown as NodeJS.ProcessEnv);
 
   assert.deepEqual(issues, []);
+});
+
+test("production readiness requires credentials for installed payment providers", () => {
+  const issues = getProductionReadinessIssues({
+    DEPLOYMENT_ENV: "production",
+    APP_NAME: "App",
+    APP_DESCRIPTION: "Description",
+    APP_URL: "https://example.com",
+    BETTER_AUTH_SECRET: "real-production-secret-with-at-least-32-characters",
+    BETTER_AUTH_URL: "https://example.com",
+    DATABASE_MODE: "external",
+    DATABASE_URL: "postgres://user:password@db.example.com:5432/app",
+    RATE_LIMIT_BACKEND: "database",
+    TRUST_PROXY_HEADERS: "true",
+    BUILD_SHA: "abc123",
+    JOB_RUNNER_SECRET: "real-job-runner-secret-with-at-least-32-characters",
+    EMAIL_PROVIDER: "smtp",
+    EMAIL_FROM: "noreply@example.com",
+    SMTP_URL: "smtp://user:password@mail.example.com:587",
+    STORAGE_PROVIDER: "s3",
+    S3_BUCKET: "production-assets",
+    S3_REGION: "eu-west-1"
+  } as unknown as NodeJS.ProcessEnv, { requiredPaymentProviders: ["stripe", "paypal"] });
+
+  assert.equal(issues.some((issue) => issue.includes("STRIPE_SECRET_KEY is required")), true);
+  assert.equal(issues.some((issue) => issue.includes("STRIPE_WEBHOOK_SECRET is required")), true);
+  assert.equal(issues.some((issue) => issue.includes("PAYPAL_CLIENT_ID is required")), true);
+  assert.equal(issues.some((issue) => issue.includes("PAYPAL_WEBHOOK_ID is required")), true);
 });

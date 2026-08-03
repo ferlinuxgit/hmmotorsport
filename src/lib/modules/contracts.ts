@@ -22,6 +22,32 @@ export interface DashboardCard {
   href: string;
 }
 
+export interface BackofficeNavItem {
+  key: string;
+  title: string;
+  description: string;
+  href: `/admin${string}`;
+}
+
+export interface RuntimeSettingDefinition {
+  key: `${string}.${string}`;
+  title: string;
+  description: string;
+  kind: "boolean" | "string" | "integer" | "email";
+  defaultValue: boolean | string | number;
+  public: boolean;
+  min?: number;
+  max?: number;
+}
+
+export interface FeatureFlagDefinition {
+  key: `${string}.${string}`;
+  title: string;
+  description: string;
+  defaultEnabled: boolean;
+  defaultRolloutPercentage?: number;
+}
+
 export interface AppModule {
   key: string;
   name: string;
@@ -32,5 +58,7 @@ export interface AppModule {
   dashboardCards: DashboardCard[];
   dbTables: string[];
   paymentProviders: PaymentProviderKey[];
+  backofficeNavigation?: BackofficeNavItem[];
+  runtimeSettings?: RuntimeSettingDefinition[];
+  featureFlags?: FeatureFlagDefinition[];
 }
-

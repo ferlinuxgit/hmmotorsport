@@ -1,7 +1,7 @@
 import { and, eq, inArray, ne } from "drizzle-orm";
 
 import { getDb } from "@/lib/db/client";
-import { orders, paymentEvents, prices, products } from "@/lib/db/schema";
+import { auditLogs, entitlements, orders, paymentEvents, prices, products } from "@/lib/db/schema";
 import type { PaymentProviderKey } from "@/lib/modules/contracts";
 import { normalizeCurrency } from "@/lib/payments/money";
 
@@ -18,6 +18,7 @@ export async function getCheckoutPrice(priceId: string, provider: PaymentProvide
       currency: prices.currency,
       productName: products.name,
       productActive: products.active,
+      priceActive: prices.active,
       workspaceId: products.workspaceId
     })
     .from(prices)
@@ -25,7 +26,7 @@ export async function getCheckoutPrice(priceId: string, provider: PaymentProvide
     .where(and(eq(prices.id, priceId), eq(prices.provider, provider)))
     .limit(1);
 
-  if (!record || !record.productActive) {
+  if (!record || !record.productActive || !record.priceActive) {
     return null;
   }
 
@@ -39,6 +40,7 @@ export async function getCheckoutPrice(priceId: string, provider: PaymentProvide
 export async function createDraftOrder(input: {
   userId: string;
   workspaceId: string | null;
+  priceId: string;
   provider: PaymentProviderKey;
   amount: string;
   currency: string;
@@ -49,6 +51,7 @@ export async function createDraftOrder(input: {
     .values({
       userId: input.userId,
       workspaceId: input.workspaceId,
+      priceId: input.priceId,
       provider: input.provider,
       status: "draft",
       total: input.amount,
@@ -160,6 +163,22 @@ export async function applyOrderPaymentEvent(input: {
 
     if (order) {
       await tx.update(paymentEvents).set({ orderId: order.id }).where(eq(paymentEvents.id, event.id));
+      if (order.status === "paid") {
+        const [subject] = await tx.select({ userId: orders.userId, workspaceId: orders.workspaceId, productId: products.id, productSlug: products.slug })
+          .from(orders).innerJoin(prices, eq(orders.priceId, prices.id)).innerJoin(products, eq(prices.productId, products.id)).where(eq(orders.id, order.id)).limit(1);
+        if (subject && (subject.workspaceId || subject.userId)) {
+          const [granted] = await tx.insert(entitlements).values({
+            key: `product:${subject.productId}`,
+            userId: subject.workspaceId ? null : subject.userId,
+            workspaceId: subject.workspaceId,
+            sourceOrderId: order.id,
+            metadata: { productId: subject.productId, productSlug: subject.productSlug }
+          }).onConflictDoNothing({ target: entitlements.sourceOrderId }).returning({ id: entitlements.id });
+          if (granted) {
+            await tx.insert(auditLogs).values({ actorUserId: null, workspaceId: subject.workspaceId, action: "billing.entitlement_granted", entityType: "entitlement", entityId: granted.id, metadata: { orderId: order.id, productId: subject.productId } });
+          }
+        }
+      }
     }
 
     return { duplicate: false, order: order ?? null };

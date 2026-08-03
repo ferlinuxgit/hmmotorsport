@@ -49,6 +49,7 @@ Un módulo define:
 - `dashboardCards`
 - `dbTables`
 - `paymentProviders`
+- `backofficeNavigation` opcional
 
 ## Significado de cada parte
 
@@ -111,6 +112,11 @@ No registra tablas automáticamente, pero documenta qué entidades de datos est�
 
 Expresa qué providers de pago son relevantes para ese módulo.
 
+### `backofficeNavigation`
+
+Registra accesos operativos bajo `/admin`. El módulo sigue siendo responsable de implementar la ruta, el servicio, sus
+permisos y la auditoría. El registro de navegación no concede acceso.
+
 ## Flujo para crear un módulo nuevo
 
 1. crea una carpeta en `src/extensions`
@@ -149,6 +155,9 @@ export const moduleDefinition: AppModule = {
 - hooks de servidor por módulo
 - carga de componentes o features más complejas
 - versionado o dependencia entre módulos
+
+El backoffice sí consume `backofficeNavigation`, pero las rutas no se generan automáticamente para evitar CRUDs genéricos
+sin reglas de dominio.
 
 ## Cuándo usar una extensión
 
@@ -213,4 +222,3 @@ Intención:
 ### Largo plazo
 
 - diseñar un sistema más formal de extensiones si el boilerplate crece mucho
-

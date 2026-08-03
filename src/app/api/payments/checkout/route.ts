@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { getCurrentAccount } from "@/lib/auth/server";
+import { accountRouteErrorResponse, authorizeAccountRequest } from "@/lib/auth/api";
 import { hasWorkspaceRole } from "@/lib/auth/rbac";
 import { getAppEnv } from "@/lib/config/env";
-import { REQUEST_ID_HEADER, resolveRequestId } from "@/lib/observability/http";
+import { isFeatureEnabled } from "@/lib/config/runtime";
+import { REQUEST_ID_HEADER, readJsonBody } from "@/lib/observability/http";
 import { logger } from "@/lib/observability/logger";
-import { checkDistributedRateLimit, getClientIp, rateLimitResponse } from "@/lib/observability/rate-limit";
 import { getPaymentProvider } from "@/lib/payments";
 import { attachCheckoutSession, createDraftOrder, getCheckoutPrice, updateOrderStatusById } from "@/lib/payments/orders";
 
@@ -22,29 +22,17 @@ const checkoutSchema = z.object({
 });
 
 export async function POST(request: Request) {
-  const requestId = resolveRequestId(request.headers);
-  const rateLimit = await checkDistributedRateLimit({
-    key: `checkout:${getClientIp(request.headers)}`,
-    limit: 30,
-    windowMs: 60_000
-  });
-
-  if (!rateLimit.allowed) {
-    return rateLimitResponse(rateLimit);
-  }
-
-  const account = await getCurrentAccount();
-
-  if (!account) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const auth = await authorizeAccountRequest(request, { rateLimitKey: "checkout", limit: 30, mutation: true });
+  if (!auth.ok) return auth.response;
+  const account = auth.actor;
+  const requestId = auth.requestId;
 
   let body: z.infer<typeof checkoutSchema>;
 
   try {
-    body = checkoutSchema.parse(await request.json());
-  } catch {
-    return NextResponse.json({ error: "Invalid checkout request" }, { status: 400 });
+    body = checkoutSchema.parse(await readJsonBody(request, 4_096));
+  } catch (error) {
+    return accountRouteErrorResponse(error) ?? NextResponse.json({ error: "Invalid checkout request" }, { status: 400 });
   }
 
   const price = await getCheckoutPrice(body.priceId, body.provider);
@@ -57,10 +45,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
+  if (body.provider === "paypal" && !(await isFeatureEnabled("commerce.paypal_checkout", { workspaceId: price.workspaceId ?? undefined, subjectId: account.id }))) {
+    return NextResponse.json({ error: "PayPal checkout is temporarily disabled" }, { status: 503 });
+  }
+
   const env = getAppEnv();
   const order = await createDraftOrder({
     userId: account.id,
     workspaceId: price.workspaceId,
+    priceId: price.priceId,
     provider: body.provider,
     amount: price.amount,
     currency: price.currency

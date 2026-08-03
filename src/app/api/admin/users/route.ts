@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
+import { ZodError } from "zod";
 
 import { requireAdminAccount } from "@/lib/auth/rbac";
-import { listRecentUsers } from "@/lib/auth/server";
+import { listAdminUsers, parseAdminUserQuery } from "@/lib/admin/users";
 import { checkDistributedRateLimit, getClientIp, rateLimitResponse } from "@/lib/observability/rate-limit";
 
 export async function GET(request: Request) {
@@ -25,6 +26,15 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const users = await listRecentUsers(50);
-  return NextResponse.json({ users });
+  try {
+    const query = parseAdminUserQuery(new URL(request.url).searchParams);
+    const result = await listAdminUsers(query);
+    return NextResponse.json({ users: result.items, pagination: result.pagination });
+  } catch (error) {
+    if (error instanceof ZodError) {
+      return NextResponse.json({ error: "Invalid query", issues: error.issues }, { status: 400 });
+    }
+
+    throw error;
+  }
 }

@@ -36,6 +36,19 @@ export const moduleDefinition: AppModule = {
     }
   ],
   dbTables: ["products", "prices", "orders"],
-  paymentProviders: ["stripe", "paypal"]
+  paymentProviders: ["stripe", "paypal"],
+  backofficeNavigation: [
+    {
+      key: "commerce-orders",
+      title: "Comercio",
+      description: "Productos, órdenes y estado de pagos.",
+      href: "/admin/commerce"
+    }
+  ],
+  runtimeSettings: [
+    { key: "commerce.default_currency", title: "Moneda predeterminada", description: "Código ISO usado al crear nuevos precios.", kind: "string", defaultValue: "EUR", public: true, min: 3, max: 3 }
+  ],
+  featureFlags: [
+    { key: "commerce.paypal_checkout", title: "Checkout PayPal", description: "Permite desactivar PayPal operativamente sin retirar el módulo.", defaultEnabled: true, defaultRolloutPercentage: 100 }
+  ]
 };
-

@@ -33,6 +33,7 @@ src/
   components/           # UI reusable
   extensions/           # módulos enchufables
   lib/
+    admin/              # backoffice, consultas y mutaciones auditadas
     auth/               # auth, cuentas, roles
     config/             # acceso tipado a entorno
     db/                 # cliente y schemas
@@ -96,7 +97,7 @@ npm run db:migrate
 - dashboard base
 - auth con Better Auth
 - cuenta de usuario
-- ruta admin
+- backoffice con usuarios, acciones y auditoría
 - abstracción de pagos
 - despliegue con Docker/Coolify
 - modo PostgreSQL interno o externo por `.env`
@@ -182,6 +183,7 @@ Ese módulo puede inyectar:
 - cards de dashboard
 - tablas relacionadas
 - providers de pago requeridos
+- navegación de backoffice
 
 ## Flujo recomendado al empezar una nueva feature
 

@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 
 import { getPaymentsEnv } from "@/lib/config/env";
-import { REQUEST_ID_HEADER, resolveRequestId } from "@/lib/observability/http";
+import { REQUEST_ID_HEADER, readJsonBody, resolveRequestId } from "@/lib/observability/http";
 import { logger } from "@/lib/observability/logger";
+import { checkDistributedRateLimit, getClientIp, rateLimitResponse } from "@/lib/observability/rate-limit";
 import { applyOrderPaymentEvent, type OrderStatus } from "@/lib/payments/orders";
 import { PaypalPaymentProvider, getPaypalBaseUrl, paypalFetch } from "@/lib/payments/providers/paypal";
 
@@ -102,6 +103,8 @@ export function getPaypalInternalOrderId(eventBody: {
 }
 
 export async function POST(request: Request) {
+  const rate = await checkDistributedRateLimit({ key: `paypal-webhook:${getClientIp(request.headers)}`, limit: 300, windowMs: 60_000 });
+  if (!rate.allowed) return rateLimitResponse(rate);
   const requestId = resolveRequestId(request.headers);
   let eventBody: {
     id?: string;
@@ -114,7 +117,7 @@ export async function POST(request: Request) {
   };
 
   try {
-    eventBody = (await request.json()) as typeof eventBody;
+    eventBody = (await readJsonBody(request, 1_048_576)) as typeof eventBody;
   } catch {
     return NextResponse.json({ error: "Invalid PayPal webhook payload" }, { status: 400 });
   }

@@ -15,8 +15,9 @@ La meta no es que el boilerplate sustituya el trabajo de producto, sino que la b
 
 ## Qué ya resuelve la base
 
-- `lint`, `typecheck`, `test`, `build` y `audit`
+- `lint`, `typecheck`, unitarios, E2E, integración PostgreSQL, `build` y `audit`
 - build Docker reproducible
+- runtime fijado en Node.js 24 LTS y PostgreSQL 18.4
 - smoke test de imagen en CI
 - smoke test HTTP reutilizable con `npm run test:smoke`
 - migraciones versionadas y copiadas al runtime
@@ -33,6 +34,9 @@ La meta no es que el boilerplate sustituya el trabajo de producto, sino que la b
 - validación de readiness de producción para secretos, base de datos y `BUILD_SHA`
 - backoffice con métricas operativas, billing, módulos, usuarios, readiness y analítica
 - analítica de primera parte con endpoint propio y tracker cliente
+- jobs PostgreSQL con deduplicación, locks, reintentos e historial de intentos
+- reconciliación periódica, reembolsos asíncronos y entitlements
+- email SMTP obligatorio y storage S3 obligatorio en producción
 
 ## Qué debe definir cada proyecto construido encima
 
@@ -54,6 +58,16 @@ La meta no es que el boilerplate sustituya el trabajo de producto, sino que la b
 - `RUN_MIGRATIONS`
 - `RATE_LIMIT_BACKEND=database`
 - `TRUST_PROXY_HEADERS=true`
+- `JOB_RUNNER_SECRET`
+- `EMAIL_PROVIDER=smtp`
+- `EMAIL_FROM`
+- `SMTP_URL`
+- `STORAGE_PROVIDER=s3`
+- `S3_BUCKET`
+- `S3_REGION`
+- credenciales IAM o `S3_ACCESS_KEY_ID` + `S3_SECRET_ACCESS_KEY`
+- `STRIPE_SECRET_KEY` y `STRIPE_WEBHOOK_SECRET` si el módulo Stripe está instalado
+- `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET` y `PAYPAL_WEBHOOK_ID` si PayPal está instalado
 
 ## Go-Live Checklist
 
@@ -69,13 +83,19 @@ La meta no es que el boilerplate sustituya el trabajo de producto, sino que la b
 10. Confirmar que las migraciones automáticas están habilitadas o que existe un job separado.
 11. Entrar en `/admin` con un usuario admin y comprobar usuarios, órdenes, readiness y analítica.
 12. Programar `node scripts/maintenance.mjs` diariamente con las retenciones definidas en el entorno.
+13. Programar `npm run jobs:run` con la frecuencia requerida y comprobar `/admin/jobs`.
+14. Crear una invitación de prueba y confirmar entrega SMTP, aceptación y eventos en `/admin/audit`.
+15. Subir, abrir y eliminar un archivo desde un workspace; confirmar objeto, checksum y auditoría.
+16. Ejecutar `TEST_DATABASE_URL=... npm run test:integration` contra una base desechable antes del primer go-live.
+17. Confirmar que el scheduler ejecuta `npm run jobs:run` al menos cada cinco minutos para reconciliar órdenes pendientes.
 
 ## Recuperación básica
 
 - Si falla `ready` pero `live` sigue en `ok`, revisar primero conectividad a base de datos y secretos de pagos.
 - Si `health.checks.configuration` falla en producción, revisar secretos placeholder, `APP_URL`, `BETTER_AUTH_SECRET`, contraseña de Postgres y `BUILD_SHA`.
 - Si falla el arranque tras una migración, desactiva `RUN_MIGRATIONS` y ejecuta migración controlada fuera del contenedor.
-- Si un webhook deja de cerrar órdenes, revisar logs por `requestId` y el estado de las firmas del proveedor.
+- Si un webhook deja de cerrar órdenes, revisar logs por `requestId`, firmas y `/admin/jobs`; la reconciliación debe hacer
+  converger las órdenes pendientes aunque un evento se pierda.
 
 ## Criterio práctico de 10/10 para esta base
 

@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { useProgressRouter } from "@/components/navigation/navigation-progress";
 import { authClient } from "@/lib/auth/auth-client";
 import { resolveSafeRedirect } from "@/lib/auth/redirects";
 
@@ -19,7 +20,7 @@ function resolveErrorMessage(error: unknown) {
 }
 
 export function SignInForm() {
-  const router = useRouter();
+  const router = useProgressRouter();
   const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
@@ -95,6 +96,7 @@ export function SignInForm() {
               Crear cuenta
             </Link>
           </div>
+          <Link href="/forgot-password" className="block rounded text-center text-sm text-muted-foreground transition hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">He olvidado mi contraseña</Link>
         </form>
       </CardContent>
     </Card>

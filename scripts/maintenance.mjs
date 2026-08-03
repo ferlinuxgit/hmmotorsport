@@ -31,12 +31,17 @@ try {
   const draftDays = positiveDays(process.env.DRAFT_ORDER_RETENTION_DAYS, 7);
   const analyticsDays = positiveDays(process.env.ANALYTICS_RETENTION_DAYS, 180);
   const paymentDays = positiveDays(process.env.PAYMENT_EVENT_RETENTION_DAYS, 365);
+  const auditDays = positiveDays(process.env.AUDIT_LOG_RETENTION_DAYS, 730);
+  const jobDays = positiveDays(process.env.JOB_RETENTION_DAYS, 90);
 
   await sql`delete from rate_limit_buckets where reset_at < now()`;
   await sql`delete from sessions where expires_at < now() - (${sessionDays} * interval '1 day')`;
   await sql`delete from orders where status = 'draft' and created_at < now() - (${draftDays} * interval '1 day')`;
   await sql`delete from analytics_events where created_at < now() - (${analyticsDays} * interval '1 day')`;
   await sql`delete from payment_events where created_at < now() - (${paymentDays} * interval '1 day')`;
+  await sql`delete from audit_logs where created_at < now() - (${auditDays} * interval '1 day')`;
+  await sql`delete from background_jobs where status in ('succeeded', 'cancelled') and completed_at < now() - (${jobDays} * interval '1 day')`;
+  await sql`update file_assets set status = case when checksum_sha256 is null then 'pending' else 'ready' end, updated_at = now() where status in ('uploading', 'deleting') and updated_at < now() - interval '1 hour'`;
   console.log("Database maintenance completed");
 } finally {
   await sql.end();

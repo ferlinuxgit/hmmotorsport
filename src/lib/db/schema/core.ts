@@ -74,8 +74,10 @@ export const workspaces = pgTable("workspaces", {
   name: varchar("name", { length: 255 }).notNull(),
   ownerId: uuid("owner_id")
     .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow()
+    .references(() => users.id, { onDelete: "restrict" }),
+  active: boolean("active").notNull().default(true),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow()
 });
 
 export const workspaceMembers = pgTable(
@@ -97,14 +99,42 @@ export const workspaceMembers = pgTable(
   ]
 );
 
+export const workspaceInvitations = pgTable(
+  "workspace_invitations",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    workspaceId: uuid("workspace_id").notNull().references(() => workspaces.id, { onDelete: "cascade" }),
+    email: varchar("email", { length: 255 }).notNull(),
+    membershipRole: varchar("membership_role", { length: 64 }).notNull().default("member"),
+    tokenHash: varchar("token_hash", { length: 64 }).notNull().unique(),
+    status: varchar("status", { length: 32 }).notNull().default("pending"),
+    invitedBy: uuid("invited_by").references(() => users.id, { onDelete: "set null" }),
+    acceptedBy: uuid("accepted_by").references(() => users.id, { onDelete: "set null" }),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    acceptedAt: timestamp("accepted_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow()
+  },
+  (table) => [
+    index("workspace_invitations_workspace_idx").on(table.workspaceId),
+    index("workspace_invitations_email_idx").on(table.email),
+    index("workspace_invitations_status_expires_idx").on(table.status, table.expiresAt)
+  ]
+);
+
 export const contentPages = pgTable("content_pages", {
   id: uuid("id").defaultRandom().primaryKey(),
   slug: varchar("slug", { length: 160 }).notNull().unique(),
   title: varchar("title", { length: 255 }).notNull(),
   summary: text("summary"),
   body: text("body").notNull().default(""),
+  seoTitle: varchar("seo_title", { length: 255 }),
+  seoDescription: varchar("seo_description", { length: 320 }),
+  status: varchar("status", { length: 32 }).notNull().default("draft"),
+  version: integer("version").notNull().default(1),
   publishedAt: timestamp("published_at", { withTimezone: true }),
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow()
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow()
 });
 
 export const analyticsEvents = pgTable(

@@ -13,16 +13,36 @@ La base ya resuelve arquitectura modular, auth, PostgreSQL, pagos, webhooks, ana
 
 ## Prioridad 2: operación del producto
 
-- convertir las tablas del backoffice en acciones autorizadas y auditables
-- añadir paginación, filtros y búsqueda cuando el volumen lo justifique
+- extender el patrón autorizado y auditable de usuarios a cada recurso del dominio
+- aplicar paginación, filtros y búsqueda a cada nueva colección administrativa
 - configurar alertas y métricas del proveedor de hosting
 - definir política real de retención de analítica y datos de cuenta
 
-## Prioridad 3: monetización
+Ya resuelto en la foundation:
 
-- modelar planes y derechos de acceso del producto
-- añadir reconciliación periódica además de webhooks
-- implementar cancelaciones, reembolsos e impuestos según mercado
+- gestión paginada de usuarios
+- activación, desactivación y roles con protección anti-lockout
+- auditoría transaccional
+- navegación de backoffice registrada por módulos
+- workspaces, ownership y membresías operables y auditados
+- jobs PostgreSQL con locks, reintentos, deduplicación y backoffice
+- invitaciones firmadas, revocables y aceptadas atómicamente
+- notificaciones email persistentes con provider SMTP y fallback de desarrollo
+- storage privado local/S3, integridad SHA-256 y autorización por workspace
+
+## Foundation completada
+
+- handlers de jobs para reconciliación
+- configuración operativa y feature flags auditables
+- exportación de cuenta y políticas de retención configurables
+- contenido versionado y publicable
+- catálogo, precios de pago único y órdenes
+- entitlements, reembolsos y reconciliación
+
+## Prioridad 3: monetización específica
+
+- modelar planes y derechos adicionales del producto sobre los entitlements base
+- implementar suscripciones, cancelaciones e impuestos según mercado
 - probar checkout completo contra entornos sandbox de Stripe y PayPal
 
 ## Prioridad 4: contenido y marca
