@@ -2,6 +2,11 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  turbopack: {
+    resolveAlias: {
+      "../build/polyfills/polyfill-module": "./src/lib/modern-browser-polyfills.ts"
+    }
+  },
   images: {
     formats: ["image/avif", "image/webp"],
     qualities: [50, 75],
