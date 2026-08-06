@@ -15,13 +15,13 @@ const bodyFont = Manrope({
 const displayFont = Barlow_Condensed({
   subsets: ["latin"],
   variable: "--font-display",
-  weight: ["500", "600", "700"]
+  weight: "600"
 });
 
 const monoFont = IBM_Plex_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
-  weight: ["400", "500"]
+  weight: "500"
 });
 
 export const metadata: Metadata = {

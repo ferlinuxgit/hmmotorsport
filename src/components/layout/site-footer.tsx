@@ -15,7 +15,7 @@ export function SiteFooter() {
       <div className="border-b border-border">
         <div className="mx-auto grid max-w-[1440px] gap-8 px-4 py-12 sm:px-6 lg:grid-cols-[1fr_auto] lg:items-end lg:px-10 lg:py-16">
           <div>
-            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">Tu proyecto empieza aquí</p>
+            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent">Tu proyecto empieza aquí</p>
             <h2 className="mt-4 max-w-4xl text-4xl font-semibold uppercase leading-[0.92] tracking-[-0.035em] text-balance sm:text-5xl lg:text-6xl">
               Cuéntanos qué quieres mejorar. Ordenaremos el camino para llegar.
             </h2>
@@ -58,7 +58,7 @@ export function SiteFooter() {
         </div>
 
         <nav aria-label="Servicios en el pie de página">
-          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">Servicios</p>
+          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent">Servicios</p>
           <ul className="mt-6 grid gap-x-8 gap-y-3 sm:grid-cols-2">
             {services.map((service) => (
               <li key={service.slug}>
@@ -75,7 +75,7 @@ export function SiteFooter() {
         </nav>
 
         <div className="md:col-span-2 lg:col-span-1">
-          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">Contacto directo</p>
+          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent">Contacto directo</p>
           <address className="mt-6 grid gap-5 text-sm not-italic">
             <a href={`tel:+${contact.electronics.phone}`} className="group flex items-start gap-3 text-muted-foreground transition hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
               <Phone className="mt-0.5 shrink-0 text-primary" size={18} weight="fill" aria-hidden="true" />

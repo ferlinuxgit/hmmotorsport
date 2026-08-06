@@ -22,7 +22,7 @@ export default function HomePage() {
       <SiteHeader />
       <main id="main-content">
         <section className="relative isolate min-h-[calc(100dvh-76px)] overflow-hidden border-b border-border lg:min-h-[calc(100dvh-118px)]">
-          <Image src="/images/hm/hero-workshop.jpg" alt="Motor preparado por HM Motorsport" fill priority sizes="100vw" className="-z-20 object-cover object-center" />
+          <Image src="/images/hm/hero-workshop.jpg" alt="Motor preparado por HM Motorsport" fill preload fetchPriority="high" quality={50} sizes="100vw" className="-z-20 object-cover object-center" />
           <div className="absolute inset-0 -z-10 bg-black/60" />
           <div className="hm-grid absolute inset-0 -z-10 opacity-30" />
           <div className="mx-auto flex min-h-[calc(100dvh-76px)] max-w-[1440px] flex-col justify-between px-4 py-10 sm:px-6 sm:py-14 lg:min-h-[calc(100dvh-118px)] lg:px-10 lg:py-16">
@@ -30,11 +30,11 @@ export default function HomePage() {
               <div>
                 <p className="inline-flex items-center gap-3 font-mono text-[11px] font-medium uppercase tracking-[0.24em] text-white/70"><span className="h-px w-10 bg-primary" /> Street · Track · Competición</p>
                 <h1 className="mt-7 max-w-6xl text-[clamp(3.65rem,9vw,8.5rem)] font-semibold uppercase leading-[0.78] tracking-[-0.055em] text-white text-balance">
-                  Electrónica<br />y mecánica <span className="text-primary">de alto rendimiento.</span>
+                  Electrónica<br />y mecánica <span className="text-accent">de alto rendimiento.</span>
                 </h1>
                 <p className="mt-8 max-w-[58ch] text-base leading-7 text-white/72 sm:text-lg">Cada proyecto se plantea según el coche, su uso y el objetivo real. Sin recetas universales. Sin piezas porque sí.</p>
                 <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                  <Link href="/contacto" className="inline-flex h-12 items-center justify-center gap-3 bg-primary px-6 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white active:translate-y-0">Solicitar asesoramiento <ArrowRight size={18} weight="bold" aria-hidden="true" /></Link>
+                  <Link href="/contacto" prefetch={false} className="inline-flex h-12 items-center justify-center gap-3 bg-primary px-6 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white active:translate-y-0">Solicitar asesoramiento <ArrowRight size={18} weight="bold" aria-hidden="true" /></Link>
                   <Link href="#servicios" className="inline-flex h-12 items-center justify-center gap-3 border border-white/30 bg-black/20 px-6 text-sm font-semibold text-white backdrop-blur-sm transition hover:border-white/55 hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white">Ver servicios <ArrowDown size={18} weight="bold" aria-hidden="true" /></Link>
                 </div>
               </div>
@@ -67,7 +67,7 @@ export default function HomePage() {
         <section className="border-y border-border bg-card">
           <div className="mx-auto grid max-w-[1440px] lg:grid-cols-[0.92fr_1.08fr]">
             <div className="relative min-h-[420px] overflow-hidden lg:min-h-[720px]">
-              <Image src="/images/hm/asistencia-pista.jpg" alt="Asistencia técnica de HM Motorsport en circuito" fill sizes="(max-width: 1024px) 100vw, 46vw" className="object-cover" />
+              <Image src="/images/hm/asistencia-pista.jpg" alt="Asistencia técnica de HM Motorsport en circuito" fill quality={50} sizes="(max-width: 1024px) 100vw, 46vw" className="object-cover" />
               <div className="absolute inset-0 bg-black/20" />
               <div className="absolute bottom-5 left-5 bg-black/80 px-4 py-3 font-mono text-[10px] uppercase tracking-[0.18em] text-white backdrop-blur sm:bottom-8 sm:left-8">Pista · diagnóstico · consistencia</div>
             </div>
@@ -77,7 +77,7 @@ export default function HomePage() {
               <div className="mt-10 border-t border-border">
                 {workBases.map(([number, title, text]) => (
                   <div key={number} className="grid grid-cols-[44px_1fr] gap-4 border-b border-border py-5 sm:grid-cols-[58px_170px_1fr] sm:gap-5">
-                    <span className="font-mono text-xs text-primary">{number}</span>
+                    <span className="font-mono text-xs text-accent">{number}</span>
                     <h3 className="text-lg font-semibold uppercase leading-none">{title}</h3>
                     <p className="col-start-2 text-sm leading-6 text-muted-foreground sm:col-start-auto">{text}</p>
                   </div>

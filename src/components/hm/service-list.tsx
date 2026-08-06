@@ -11,6 +11,7 @@ export function ServiceList({ compact = false }: { compact?: boolean }) {
         <article key={service.slug} className="group border-b border-border">
           <Link
             href={getServiceHref(service)}
+            prefetch={false}
             className="grid gap-5 py-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring md:grid-cols-[64px_240px_1fr_auto] md:items-center md:gap-7 lg:grid-cols-[72px_300px_1fr_auto] lg:py-8"
           >
             <span className="font-mono text-xs text-muted-foreground">0{index + 1}</span>
@@ -19,13 +20,14 @@ export function ServiceList({ compact = false }: { compact?: boolean }) {
                 src={service.image}
                 alt={service.imageAlt}
                 fill
-                sizes="(max-width: 768px) 100vw, 300px"
+                quality={50}
+                sizes="(max-width: 768px) calc(100vw - 2rem), 300px"
                 className="object-cover saturate-[0.85] transition duration-500 group-hover:scale-[1.035] group-hover:saturate-100"
               />
               <div className="absolute inset-0 bg-black/15 transition group-hover:bg-transparent" />
             </div>
             <div className="min-w-0">
-              <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-primary">{service.code}</p>
+              <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-accent">{service.code}</p>
               <h3 className="mt-2 text-2xl font-semibold uppercase leading-none tracking-[-0.02em] sm:text-3xl">{service.title}</h3>
               <p className="mt-3 max-w-[62ch] text-sm leading-6 text-muted-foreground">{service.description}</p>
               <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1">
