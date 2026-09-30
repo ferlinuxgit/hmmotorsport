@@ -8,6 +8,9 @@ COPY vendor ./vendor
 RUN npm ci
 
 FROM base AS builder
+# Las páginas públicas se prerenderizan: la URL pública debe existir en build.
+ARG APP_URL=https://hmmotorsport.es
+ENV APP_URL=$APP_URL
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npm run build

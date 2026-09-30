@@ -50,7 +50,9 @@ export function ServiceGallery({
           src={activeImage.src}
           alt={activeImage.alt}
           fill
-          priority={activeIndex === 0}
+          preload={activeIndex === 0}
+          fetchPriority={activeIndex === 0 ? "high" : undefined}
+          quality={50}
           sizes="(max-width: 1024px) 100vw, 45vw"
           className="object-cover"
         />
@@ -89,7 +91,7 @@ export function ServiceGallery({
             aria-label={`Ver imagen ${index + 1}: ${image.alt}`}
             aria-pressed={index === activeIndex}
           >
-            <Image src={image.src} alt="" fill sizes="(max-width: 640px) 25vw, 12vw" className="object-cover" />
+            <Image src={image.src} alt="" fill quality={50} sizes="(max-width: 640px) 30vw, 12vw" className="object-cover" />
           </button>
         ))}
       </div>

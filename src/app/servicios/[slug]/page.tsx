@@ -9,7 +9,9 @@ import { SectionHeading } from "@/components/hm/section-heading";
 import { ServiceGallery } from "@/components/hm/service-gallery";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
+import { JsonLd } from "@/components/seo/json-ld";
 import { serviceDetails, services } from "@/lib/hm-content";
+import { absoluteUrl, breadcrumbJsonLd, businessId, pageMetadata } from "@/lib/seo";
 
 export function generateStaticParams() {
   return Object.keys(serviceDetails).map((slug) => ({ slug }));
@@ -20,30 +22,60 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const service = serviceDetails[slug];
   if (!service) return {};
   const summary = services.find((item) => item.slug === slug);
-  return {
-    title: summary?.title ?? service.title,
+  return pageMetadata({
+    title: `${summary?.title ?? service.title} en Alicante`,
     description: service.intro,
-    alternates: { canonical: `/servicios/${slug}` },
-    openGraph: {
-      title: summary?.title ?? service.title,
-      description: service.intro,
-      images: [{ url: service.image, alt: service.imageAlt }]
-    }
-  };
+    path: `/servicios/${slug}`,
+    image: { url: service.image, alt: service.imageAlt }
+  });
 }
 
 export default async function ServiceDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const service = serviceDetails[slug];
   if (!service) notFound();
+  const summary = services.find((item) => item.slug === slug);
+  const name = summary?.title ?? service.title;
+  const path = `/servicios/${slug}`;
 
   return (
     <div className="min-h-[100dvh] bg-background">
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Service",
+              "@id": absoluteUrl(`${path}#service`),
+              name,
+              serviceType: summary?.shortTitle ?? name,
+              description: service.intro,
+              url: absoluteUrl(path),
+              image: absoluteUrl(service.image),
+              provider: { "@id": businessId },
+              areaServed: { "@type": "AdministrativeArea", name: "Alicante" }
+            },
+            breadcrumbJsonLd([
+              { name: "Inicio", path: "/" },
+              { name: "Servicios", path: "/servicios" },
+              { name, path }
+            ]),
+            {
+              "@type": "FAQPage",
+              mainEntity: service.faqs.map((faq) => ({
+                "@type": "Question",
+                name: faq.question,
+                acceptedAnswer: { "@type": "Answer", text: faq.answer }
+              }))
+            }
+          ]
+        }}
+      />
       <SiteHeader />
       <main id="main-content">
         <section className="mx-auto grid max-w-[1440px] gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:px-10 lg:py-24">
           <div>
-            <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-primary">{service.eyebrow}</p>
+            <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-accent">{service.eyebrow}</p>
             <h1 className="mt-5 max-w-5xl text-5xl font-semibold uppercase leading-[0.86] tracking-[-0.045em] sm:text-7xl lg:text-8xl">{service.title}</h1>
             <p className="mt-7 max-w-[62ch] text-lg leading-8 text-muted-foreground">{service.intro}</p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -55,7 +87,7 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
             <ServiceGallery images={service.gallery} highlights={service.highlights} />
           ) : (
             <div className="relative aspect-[4/5] overflow-hidden border border-border sm:aspect-[5/4] lg:aspect-[4/5]">
-              <Image src={service.image} alt={service.imageAlt} fill priority sizes="(max-width: 1024px) 100vw, 45vw" className="object-cover" />
+              <Image src={service.image} alt={service.imageAlt} fill preload fetchPriority="high" quality={50} sizes="(max-width: 1024px) 100vw, 45vw" className="object-cover" />
               <div className="absolute inset-x-0 bottom-0 grid gap-px bg-white/15 sm:grid-cols-3">
                 {service.highlights.map((item) => <div key={item} className="flex items-center gap-2 bg-black/82 px-4 py-4 font-mono text-[10px] uppercase tracking-[0.12em] text-white backdrop-blur"><Check size={14} className="shrink-0 text-primary" weight="bold" aria-hidden="true" />{item}</div>)}
               </div>
@@ -89,7 +121,7 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
           <div className="mt-16 grid border-t border-border md:grid-cols-2 xl:grid-cols-4">
             {service.includes.map((item, index) => (
               <article key={item.label} className={`border-b border-border py-7 md:px-7 ${index % 2 === 0 ? "md:border-r md:pl-0 xl:pl-7" : "md:pr-0 xl:border-r xl:pr-7"} xl:first:pl-0 xl:last:border-r-0 xl:last:pr-0`}>
-                <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-primary">{item.label}</span>
+                <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-accent">{item.label}</span>
                 <h3 className="mt-8 text-2xl font-semibold uppercase">{item.title}</h3>
                 <p className="mt-3 text-sm leading-6 text-muted-foreground">{item.text}</p>
               </article>
@@ -100,19 +132,19 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
         <section className="border-y border-border bg-card">
           <div className="mx-auto grid max-w-[1440px] gap-16 px-4 py-20 sm:px-6 lg:grid-cols-2 lg:px-10 lg:py-28">
             <div>
-              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">Proceso de trabajo</p>
+              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent">Proceso de trabajo</p>
               <div className="mt-7 border-t border-border">
-                {service.process.map((step, index) => <div key={step} className="grid grid-cols-[42px_1fr] border-b border-border py-5"><span className="font-mono text-xs text-primary">0{index + 1}</span><p className="font-medium">{step}</p></div>)}
+                {service.process.map((step, index) => <div key={step} className="grid grid-cols-[42px_1fr] border-b border-border py-5"><span className="font-mono text-xs text-accent">0{index + 1}</span><p className="font-medium">{step}</p></div>)}
               </div>
             </div>
             <div>
-              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">Para presupuestar</p>
+              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent">Para presupuestar</p>
               <h2 className="mt-5 text-4xl font-semibold uppercase leading-none">Necesitamos una base clara.</h2>
               <p className="mt-4 max-w-[55ch] text-sm leading-6 text-muted-foreground">Con esta información podemos valorar alcance, coste y plazos sin hacerte perder tiempo.</p>
               <ul className="mt-7 grid gap-3">
                 {service.requirements.map((item) => <li key={item} className="flex items-start gap-3 border-b border-border pb-3 text-sm"><Check size={17} className="mt-0.5 shrink-0 text-primary" weight="bold" aria-hidden="true" />{item}</li>)}
               </ul>
-              <Link href={`/contacto?servicio=${service.slug}`} className="mt-8 inline-flex items-center gap-3 text-sm font-semibold text-primary transition hover:gap-4">Enviar información <ArrowRight size={18} weight="bold" aria-hidden="true" /></Link>
+              <Link href={`/contacto?servicio=${service.slug}`} className="mt-8 inline-flex items-center gap-3 text-sm font-semibold text-accent transition hover:gap-4">Enviar información <ArrowRight size={18} weight="bold" aria-hidden="true" /></Link>
             </div>
           </div>
         </section>

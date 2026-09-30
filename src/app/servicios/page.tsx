@@ -5,6 +5,7 @@ import { SectionHeading } from "@/components/hm/section-heading";
 import { ServiceList } from "@/components/hm/service-list";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
+import { pageMetadata } from "@/lib/seo";
 
 export default function ServicesPage() {
   return (
@@ -27,8 +28,8 @@ export default function ServicesPage() {
   );
 }
 
-export const metadata: Metadata = {
-  title: "Servicios",
-  description: "Calibración ECU, banco de potencia, cableado motorsport, preparación mecánica, fabricación, jaulas y asistencia en carreras.",
-  alternates: { canonical: "/servicios" }
-};
+export const metadata: Metadata = pageMetadata({
+  title: "Servicios de preparación y electrónica motorsport",
+  description: "Calibración ECU, banco de potencia, cableado motorsport, preparación mecánica, fabricación TIG, jaulas antivuelco y asistencia en carreras en Albatera, Alicante.",
+  path: "/servicios"
+});

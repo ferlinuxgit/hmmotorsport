@@ -8,6 +8,7 @@ import { SectionHeading } from "@/components/hm/section-heading";
 import { ServiceList } from "@/components/hm/service-list";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
+import { pageMetadata } from "@/lib/seo";
 
 const workBases = [
   ["01", "Revisión inicial", "Objetivo, configuración y estado real del coche."],
@@ -28,7 +29,7 @@ export default function HomePage() {
           <div className="mx-auto flex min-h-[calc(100dvh-76px)] max-w-[1440px] flex-col justify-between px-4 py-10 sm:px-6 sm:py-14 lg:min-h-[calc(100dvh-118px)] lg:px-10 lg:py-16">
             <div className="grid gap-10 lg:grid-cols-[1fr_320px] lg:items-start">
               <div>
-                <p className="inline-flex items-center gap-3 font-mono text-[11px] font-medium uppercase tracking-[0.24em] text-white/70"><span className="h-px w-10 bg-primary" /> Street · Track · Competición</p>
+                <p className="inline-flex items-center gap-3 font-mono text-[11px] font-medium uppercase tracking-[0.24em] text-white/70"><span className="h-px w-10 bg-primary" /> Taller motorsport · Albatera, Alicante</p>
                 <h1 className="mt-7 max-w-6xl text-[clamp(3.65rem,9vw,8.5rem)] font-semibold uppercase leading-[0.78] tracking-[-0.055em] text-white text-balance">
                   Electrónica<br />y mecánica <span className="text-accent">de alto rendimiento.</span>
                 </h1>
@@ -108,8 +109,9 @@ export default function HomePage() {
   );
 }
 
-export const metadata: Metadata = {
-  title: "HM Motorsport | Electrónica y mecánica de alto rendimiento",
-  description: "Preparación de vehículos, calibración ECU, cableado motorsport, banco de potencia, fabricación y asistencia en pista en Albatera, Alicante.",
-  alternates: { canonical: "/" }
-};
+export const metadata: Metadata = pageMetadata({
+  title: "HM Motorsport | Taller de preparación y electrónica en Alicante",
+  description: "Taller de preparación en Albatera (Alicante): calibración ECU, banco de potencia 4x4, cableado motorsport, mecánica, fabricación TIG, jaulas y asistencia en pista.",
+  path: "/",
+  absoluteTitle: true
+});

@@ -20,6 +20,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     url: new URL(path, siteUrl).toString(),
     lastModified: now,
     changeFrequency: path === "/" ? "weekly" : "monthly",
-    priority: path === "/" ? 1 : 0.7
+    priority: getPriority(path)
   }));
+}
+
+function getPriority(path: string) {
+  if (path === "/") return 1;
+  if (path.startsWith("/servicios")) return 0.9;
+  if (path === "/privacy" || path === "/terms") return 0.2;
+  return 0.7;
 }

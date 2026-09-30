@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 
 import { LegalPage, LegalSection } from "@/components/layout/legal-page";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Privacidad",
   description: "Información básica sobre privacidad y tratamiento de consultas en HM Motorsport.",
-  alternates: { canonical: "/privacy" }
-};
+  path: "/privacy"
+});
 
 export default function PrivacyPage() {
   return (

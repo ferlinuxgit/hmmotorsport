@@ -41,7 +41,7 @@ export function MobileNavigation({
                   key={item.href}
                   href={item.href}
                   onClick={() => setOpen(false)}
-                  className={cn("flex items-center justify-between border-b border-border px-2 py-4 text-lg font-semibold uppercase tracking-[-0.01em]", active && "text-primary")}
+                  className={cn("flex items-center justify-between border-b border-border px-2 py-4 text-lg font-semibold uppercase tracking-[-0.01em]", active && "text-accent")}
                 >
                   {item.title}<span className="font-mono text-[10px] text-muted-foreground">0{index + 1}</span>
                 </Link>

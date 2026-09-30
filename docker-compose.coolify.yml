@@ -8,8 +8,8 @@ services:
       NODE_ENV: production
       PORT: 3000
       RUN_MIGRATIONS: ${RUN_MIGRATIONS:-true}
-      APP_NAME: ${APP_NAME:-Universal Boilerplate}
-      APP_DESCRIPTION: ${APP_DESCRIPTION:-Next.js production boilerplate}
+      APP_NAME: ${APP_NAME:-HM Motorsport}
+      APP_DESCRIPTION: ${APP_DESCRIPTION:-Electrónica y mecánica de alto rendimiento: calibración ECU, cableado motorsport, preparación, fabricación y asistencia en pista.}
       APP_URL: ${APP_URL}
       DEPLOYMENT_ENV: ${DEPLOYMENT_ENV:-production}
       LOG_LEVEL: ${LOG_LEVEL:-info}

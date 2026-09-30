@@ -7,6 +7,7 @@ import { ContactBand } from "@/components/hm/contact-band";
 import { SectionHeading } from "@/components/hm/section-heading";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
+import { pageMetadata } from "@/lib/seo";
 
 const values = [
   ["Orden", "Cableado, routing y montaje pensados para revisar y mantener."],
@@ -22,16 +23,16 @@ export default function AboutPage() {
       <main id="main-content">
         <section className="mx-auto grid max-w-[1440px] gap-12 px-4 py-16 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:px-10 lg:py-28">
           <div>
-            <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-primary">Quiénes somos</p>
+            <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-accent">Quiénes somos</p>
             <h1 className="mt-5 max-w-5xl text-5xl font-semibold uppercase leading-[0.86] tracking-[-0.045em] sm:text-7xl lg:text-8xl">Ingeniería, método y obsesión por el detalle.</h1>
             <p className="mt-7 max-w-[60ch] text-lg leading-8 text-muted-foreground">No hacemos preparaciones por moda. Partimos de un objetivo, ordenamos prioridades, ejecutamos con limpieza y validamos el resultado.</p>
-            <Link href="/contacto" className="mt-8 inline-flex items-center gap-3 text-sm font-semibold text-primary transition hover:gap-4">Conocer nuestro enfoque para tu coche <ArrowRight size={18} weight="bold" aria-hidden="true" /></Link>
+            <Link href="/contacto" className="mt-8 inline-flex items-center gap-3 text-sm font-semibold text-accent transition hover:gap-4">Conocer nuestro enfoque para tu coche <ArrowRight size={18} weight="bold" aria-hidden="true" /></Link>
           </div>
           <div className="relative aspect-[4/5] overflow-hidden border border-border sm:aspect-[5/4] lg:aspect-[4/5]">
-            <Image src="/images/hm/hero-workshop.jpg" alt="Motor de altas prestaciones preparado por HM Motorsport" fill priority sizes="(max-width: 1024px) 100vw, 45vw" className="object-cover" />
+            <Image src="/images/hm/hero-workshop.jpg" alt="Motor de altas prestaciones preparado por HM Motorsport" fill preload fetchPriority="high" quality={50} sizes="(max-width: 1024px) 100vw, 45vw" className="object-cover" />
             <div className="absolute inset-0 bg-black/15" />
             <div className="absolute bottom-0 left-0 border-r border-t border-white/20 bg-black/85 p-5 text-white backdrop-blur-sm sm:p-7">
-              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">Street · Track · Competición</p>
+              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent">Street · Track · Competición</p>
               <p className="mt-3 max-w-xs text-lg font-semibold uppercase">Si una mejora no aporta, te lo decimos.</p>
             </div>
           </div>
@@ -57,7 +58,7 @@ export default function AboutPage() {
           <div className="mt-14 grid border-t border-border lg:grid-cols-5">
             {["Brief", "Diagnóstico", "Plan", "Ejecución", "Validación"].map((step, index) => (
               <div key={step} className="border-b border-border py-6 lg:border-r lg:px-6 lg:first:pl-0 lg:last:border-r-0">
-                <span className="font-mono text-xs text-primary">0{index + 1}</span>
+                <span className="font-mono text-xs text-accent">0{index + 1}</span>
                 <h3 className="mt-6 text-xl font-semibold uppercase">{step}</h3>
                 <p className="mt-3 text-sm leading-6 text-muted-foreground">{[
                   "Uso, objetivo, presupuesto y plazos.",
@@ -78,8 +79,8 @@ export default function AboutPage() {
   );
 }
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Quiénes somos",
-  description: "Conoce el enfoque de HM Motorsport: preparación de vehículos con método, fiabilidad, datos y transparencia técnica.",
-  alternates: { canonical: "/quienes-somos" }
-};
+  description: "Conoce HM Motorsport, taller de preparación en Albatera (Alicante): método, fiabilidad, datos y transparencia técnica en cada proyecto.",
+  path: "/quienes-somos"
+});

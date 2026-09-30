@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 
 import { LegalPage, LegalSection } from "@/components/layout/legal-page";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Aviso legal",
   description: "Condiciones generales de uso del sitio web de HM Motorsport.",
-  alternates: { canonical: "/terms" }
-};
+  path: "/terms"
+});
 
 export default function TermsPage() {
   return (

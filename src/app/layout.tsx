@@ -5,7 +5,9 @@ import { Suspense, type ReactNode } from "react";
 import "@/app/globals.css";
 import { AnalyticsTracker } from "@/components/analytics/analytics-tracker";
 import { NavigationProgressProvider, NavigationProgressRouteObserver } from "@/components/navigation/navigation-progress";
+import { JsonLd } from "@/components/seo/json-ld";
 import { getSiteUrl, siteConfig } from "@/lib/config/site";
+import { businessJsonLd } from "@/lib/seo";
 
 const bodyFont = Manrope({
   subsets: ["latin"],
@@ -35,7 +37,6 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
-      { url: "/favicon.svg", type: "image/svg+xml" },
       { url: "/favicon-96x96.png", sizes: "96x96", type: "image/png" }
     ],
     apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }]
@@ -43,7 +44,6 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: siteConfig.locale,
-    url: "/",
     siteName: siteConfig.name,
     title: siteConfig.name,
     description: siteConfig.description,
@@ -85,6 +85,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         >
           Saltar al contenido
         </a>
+        <JsonLd data={businessJsonLd()} />
         <NavigationProgressProvider>
           {children}
           <Suspense fallback={null}>
